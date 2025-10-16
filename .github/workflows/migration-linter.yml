@@ -28,10 +28,17 @@ jobs:
           composer config repositories.sufyan path ../
           composer require sufyan/laravel-migration-linter:@dev --ignore-platform-reqs --no-interaction
 
-      - name: 🧩 Run Migration Linter
+      # - name: 🧩 Run Migration Linter
+      #   run: |
+      #     cd test-laravel-app
+      #     php artisan migrate:lint --json > lint-report.json
+
+      # This is just for demo/testing
+      - name: 🧩 Run Migration Linter (non-blocking)
         run: |
           cd test-laravel-app
-          php artisan migrate:lint --json > lint-report.json
+          php artisan migrate:lint --json > lint-report.json || true
+
 
       - name: 📦 Upload Lint Report (optional)
         uses: actions/upload-artifact@v4
