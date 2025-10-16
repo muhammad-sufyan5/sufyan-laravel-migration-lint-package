@@ -26,7 +26,7 @@ jobs:
           composer create-project laravel/laravel test-laravel-app
           cd test-laravel-app
           composer config repositories.sufyan path ../
-          composer require sufyan/laravel-migration-linter:@dev
+          composer require sufyan/laravel-migration-linter:@dev --ignore-platform-reqs
 
       - name: 🧩 Run Migration Linter
         run: |
