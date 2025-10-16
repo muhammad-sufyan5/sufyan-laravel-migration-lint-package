@@ -163,9 +163,6 @@ php artisan migrate:lint --json > storage/lint-report.json
 ### 🎯 Goal
 Enhance migration parsing and linting logic to detect exact column names, improve message clarity, and ensure proper propagation across all layers (parser → operation → rule → reporter).
 
----
-
-### 🧱 Step 7.1 — Upgrade Migration Parser
 - Enhanced the Migration Parser to detect column names by extracting the first argument of `$table->method('column')`.
 - Added a new `column` key to every parsed operation.
 - Each operation now includes:
@@ -178,5 +175,22 @@ php artisan tinker
 $parser = new \Sufyan\MigrationLinter\Support\MigrationParser();
 collect($parser->parse(base_path('database/migrations')))->take(3);
 
+## 🧩 Rule: MissingIndexOnForeignKey
 
+### Goal
+Introduce a new linting rule that detects foreign key-like columns (ending with `_id`) that are added without an index or foreign constraint.
+
+### Actions Performed
+- Added a new rule class: `MissingIndexOnForeignKey`.
+- The rule checks for:
+  - Column creation methods (`unsignedBigInteger`, `integer`, etc.).
+  - Column names ending with `_id`.
+  - Absence of `->index()` or `->foreign()` statements.
+- Added this rule to the `RuleEngine` map and enabled it in the configuration.
+- Now warns developers when they add a foreign key column without indexing.
+
+### Verification
+Run:
+```bash
+php artisan migrate:lint
 

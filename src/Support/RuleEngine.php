@@ -2,8 +2,10 @@
 
 namespace Sufyan\MigrationLinter\Support;
 
-use Sufyan\MigrationLinter\Rules\AbstractRule;
 use Illuminate\Support\Facades\App;
+use Sufyan\MigrationLinter\Rules\AbstractRule;
+use Sufyan\MigrationLinter\Rules\MissingIndexOnForeignKey;
+use Sufyan\MigrationLinter\Rules\AddNonNullableColumnWithoutDefault;
 
 class RuleEngine
 {
@@ -20,7 +22,8 @@ class RuleEngine
     protected function loadRules(): void
     {
         $map = [
-            'AddNonNullableColumnWithoutDefault' => \Sufyan\MigrationLinter\Rules\AddNonNullableColumnWithoutDefault::class,
+            'AddNonNullableColumnWithoutDefault' => AddNonNullableColumnWithoutDefault::class,
+            'MissingIndexOnForeignKey' => MissingIndexOnForeignKey::class,
             // future rules go here...
         ];
 
