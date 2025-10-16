@@ -1,0 +1,26 @@
+# Composer
+/vendor/
+composer.lock
+
+# Node (if you ever add npm)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests / coverage
+.phpunit.result.cache
+coverage/
+
+# Cache & logs
+storage/
+*.log

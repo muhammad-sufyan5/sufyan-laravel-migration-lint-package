@@ -1,0 +1,47 @@
+{
+  "name": "sufyan/laravel-migration-linter",
+  "description": "Static analyzer that lints Laravel migrations for risky patterns",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Muhammad Sufyan",
+      "email": "muhammadsufyanwebdeveloper@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^10.0|^11.0",
+    "spatie/laravel-package-tools": "^1.16"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^8.0|^9.0",
+    "pestphp/pest": "^3.0",
+    "laravel/pint": "^1.0",
+    "nunomaduro/larastan": "^2.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sufyan\\MigrationLinter\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Sufyan\\MigrationLinter\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Sufyan\\MigrationLinter\\MigrationLinterServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
