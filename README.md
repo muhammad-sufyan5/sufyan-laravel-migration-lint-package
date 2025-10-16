@@ -1,5 +1,5 @@
 # 🧩 Laravel Migration Linter  
-[![Migration Linter](https://github.com/sufyan/laravel-migration-linter/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/sufyan/laravel-migration-linter/actions)
+[![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
 
@@ -121,6 +121,7 @@ Add under the root object:
     "issues": "https://github.com/sufyan/laravel-migration-linter/issues",
     "source": "https://github.com/sufyan/laravel-migration-linter"
 }
+```
 ---
 
 ## 🧠 Author
