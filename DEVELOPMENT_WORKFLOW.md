@@ -156,78 +156,65 @@ Run the following commands inside the Laravel app using this package:
 ```bash
 php artisan migrate:lint
 php artisan migrate:lint --json > storage/lint-report.json
-
+```
 
 ## 🧩 Step 7 — Column Name Extraction & Enhancements
 
-### 🎯 Goal  
+### 🎯 Goal
 Enhance migration parsing and linting logic to detect exact column names, improve message clarity, and ensure proper propagation across all layers (parser → operation → rule → reporter).
 
----
-
-### 🧱 Actions Performed  
 - Enhanced the Migration Parser to detect column names by extracting the first argument of `$table->method('column')`.
 - Added a new `column` key to every parsed operation.
 - Each operation now includes:
   - `table`, `method`, `args`, and `column` attributes.
 - Parser now recognizes column names for regular schema calls (e.g., `string('name')`, `integer('age')`).
 
----
-
-### 🧪 Verification  
-Run:
+**Verification**
 ```bash
 php artisan tinker
+```
 $parser = new \Sufyan\MigrationLinter\Support\MigrationParser();
 collect($parser->parse(base_path('database/migrations')))->take(3);
 
-🧩 Rule: MissingIndexOnForeignKey
-🎯 Goal
+## 🧩 Rule: MissingIndexOnForeignKey
 
-Introduce a new linting rule that detects foreign key-like columns (ending with _id) that are added without an index or foreign constraint.
+### Goal
+Introduce a new linting rule that detects foreign key-like columns (ending with `_id`) that are added without an index or foreign constraint.
 
-🧱 Actions Performed
+### Actions Performed
+- Added a new rule class: `MissingIndexOnForeignKey`.
+- The rule checks for:
+  - Column creation methods (`unsignedBigInteger`, `integer`, etc.).
+  - Column names ending with `_id`.
+  - Absence of `->index()` or `->foreign()` statements.
+- Added this rule to the `RuleEngine` map and enabled it in the configuration.
+- Now warns developers when they add a foreign key column without indexing.
 
-Added a new rule class: MissingIndexOnForeignKey.
-
-The rule checks for:
-
-Column creation methods (unsignedBigInteger, integer, etc.).
-
-Column names ending with _id.
-
-Absence of ->index() or ->foreign() statements.
-
-Added this rule to the RuleEngine map and enabled it in the configuration.
-
-Now warns developers when they add a foreign key column without indexing.
-
+### Verification
+Run:
 ```bash
 php artisan migrate:lint
+```
 
+## 🧩 Step 8 — Add Severity Levels for Rules
 
-🧩 Step 8 — Add Severity Levels for Rules
-🎯 Goal
+### Goal
+Allow each linting rule to define its own severity level (`info`, `warning`, or `error`) and support overriding via configuration.
 
-Allow each linting rule to define its own severity level (info, warning, or error) and support overriding via configuration.
+### Actions Performed
+- Added a `severity()` method to the `AbstractRule` base class.
+- Updated the `warn()` helper to respect rule-specific severity.
+- Modified all existing rules (`AddNonNullableColumnWithoutDefault`, `MissingIndexOnForeignKey`) to define default severity.
+- Enhanced the configuration to allow per-rule overrides:
+  php
+  'rules' => [
+      'AddNonNullableColumnWithoutDefault' => [
+          'enabled' => true,
+          'severity' => 'error',
+      ],
+      'MissingIndexOnForeignKey' => [
+          'enabled' => true,
+          'severity' => 'warning',
+      ],
+  ],
 
-🧱 Actions Performed
-
-Added a severity() method to the AbstractRule base class.
-
-Updated the warn() helper to respect rule-specific severity.
-
-Modified all existing rules (AddNonNullableColumnWithoutDefault, MissingIndexOnForeignKey) to define default severity.
-
-Enhanced the configuration to allow per-rule overrides:
-
-  ```'rules' => [
-    'AddNonNullableColumnWithoutDefault' => [
-        'enabled' => true,
-        'severity' => 'error',
-    ],
-    'MissingIndexOnForeignKey' => [
-        'enabled' => true,
-        'severity' => 'warning',
-    ],
-],
