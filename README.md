@@ -109,7 +109,7 @@ Run the linter as part of your pipeline:
   ```
 CI will fail automatically if issues meet or exceed the configured severity threshold.
 
-💡 Why Use This?
+## 💡 Why Use This?
 ✅ Prevents dangerous schema changes before deployment.
 ⚙️ Enforces database best practices automatically.
 🧩 Extensible — you can create custom rules for your project.
@@ -117,7 +117,7 @@ CI will fail automatically if issues meet or exceed the configured severity thre
 
 ---
 
-🧑‍💻 Contributing
+## 🧑‍💻 Contributing
 Contributions are welcome!
 If you have an idea for a useful rule or enhancement, feel free to open a PR or issue.
 
@@ -129,12 +129,12 @@ Commit your changes and open a pull request.
 
 ---
 
-🧾 License
+## 🧾 License
 This package is open-source software licensed under the MIT license.
 
 ---
 
-🧠 Author
+## 🧠 Author
 Muhammad Sufyan
 📧 muhammadsufyanwebdeveloper@gmail.com
 🐙 GitHub: @sufyan

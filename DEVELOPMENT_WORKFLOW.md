@@ -219,4 +219,21 @@ Allow each linting rule to define its own severity level (`info`, `warning`, or 
       ],
   ],
   ```
+## 🧩 Step 9 — Baseline Ignoring System
+
+### Goal
+Allow developers to generate and reuse a baseline file to ignore known existing issues, ensuring only new migration problems are reported.
+
+### Features
+- Added a new CLI option: `--generate-baseline`
+- Generates `migration-linter-baseline.json` in the project root.
+- On subsequent lint runs, issues found in the baseline are ignored.
+- Clean output shown when all issues are baseline-ignored.
+- Ideal for introducing the linter into existing legacy codebases.
+
+### Commands
+```bash
+php artisan migrate:lint --generate-baseline  # Create or update baseline
+php artisan migrate:lint                      # Run lint with baseline filtering
+```
 
