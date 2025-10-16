@@ -236,4 +236,47 @@ Allow developers to generate and reuse a baseline file to ignore known existing 
 php artisan migrate:lint --generate-baseline  # Create or update baseline
 php artisan migrate:lint                      # Run lint with baseline filtering
 ```
+## 🧩 Step 10 — CI/CD Integration
 
+### Goal
+Integrate the Laravel Migration Linter into GitHub Actions for automated linting during CI/CD workflows.
+
+### Features
+- Added workflow `.github/workflows/migration-linter.yml`.
+- Automatically runs on pushes and pull requests to `main` or `master`.
+- Executes `php artisan migrate:lint` in JSON mode.
+- Uploads lint results as a GitHub artifact.
+- Fails the build if any rule with severity `error` is found.
+- Adds a live status badge to the README.
+
+### Verification
+1. Commit and push the workflow file.
+2. Check the **Actions** tab in GitHub.
+3. See results:
+   - ✅ “Migration Linter passed successfully.”
+   - ❌ “Migration Linter found errors.”
+4. Add the badge to README for visual status.
+
+### Notes
+- Ensures database schema safety checks in CI/CD pipelines.
+- Enables automatic migration validation before merging.
+- This step prepares the package for open-source release on Packagist.
+
+## 🧩 Step 11 — Final Documentation & README Polish
+
+### Goal
+Prepare the package for public release by writing clear and professional documentation for GitHub and Packagist.
+
+### Actions Performed
+- Added a comprehensive README with badges, installation guide, usage examples, sample output, and CI integration snippet.  
+- Added metadata (`homepage`, `keywords`, `support`) in `composer.json`.  
+- Verified badge URL for GitHub Actions status.  
+
+### Verification
+1. Commit and push `README.md` to GitHub.  
+2. View on GitHub → it should display badges and sections correctly.  
+3. Preview on Packagist after registration to ensure it renders cleanly.
+
+### Notes
+This step completes the public-facing documentation needed for open-source distribution. 
+Next: **Step 12 — Packagist Release & Version Tagging**

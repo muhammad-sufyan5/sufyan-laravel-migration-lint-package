@@ -1,15 +1,22 @@
-# 🧱 Laravel Migration Linter
+# 🧩 Laravel Migration Linter  
+[![Migration Linter](https://github.com/sufyan/laravel-migration-linter/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/sufyan/laravel-migration-linter/actions)
 
-A lightweight **Laravel developer tool** by **Sufyan** that analyzes your database migration files and highlights **risky schema changes**, **missing indexes**, or **non-best-practice patterns** — before they hit production.  
-
-> Catch potential database issues early. Make your migrations bulletproof.
+A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
 
 ---
 
-## 🚀 Installation
+## 🚀 Features
+✅ Detects dangerous migration operations (like adding non-nullable columns without defaults).  
+✅ Warns about missing indexes on foreign key columns.  
+✅ Configurable rule severities (info, warning, error).  
+✅ Baseline support to ignore known legacy issues.  
+✅ CLI report with JSON output & colorized table.  
+✅ Ready for CI/CD integration (GitHub Actions support).  
 
-Require the package using Composer (recommended for local/dev environments):
+---
 
+## 📦 Installation
+Install via Composer:  
 ```bash
 composer require sufyan/laravel-migration-linter --dev
 ```
@@ -27,11 +34,36 @@ This creates:
 ```bash
 config/migration-linter.php
 ```
+
+⚙️ Configuration
+
+Default config file (config/migration-linter.php):
+```bash
+return [
+    'severity_threshold' => 'warning',
+
+    'rules' => [
+        'AddNonNullableColumnWithoutDefault' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
+        'MissingIndexOnForeignKey' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
+    ],
+];
+```
+
 🧩 Usage
 Run the built-in Artisan command to lint all migration files:
 
 ```bash
 php artisan migrate:lint
+```
+Generate Baseline (ignore known issues)
+```bash
+php artisan migrate:lint --generate-baseline
 ```
 Example Output
 
@@ -48,90 +80,47 @@ Example Output
 
 Linting complete. Found 2 issue(s).
 ```
-⚙️ Configuration Options
-You can configure which rules are enabled and what severity level they should have:
-
+🧰 GitHub Actions Integration
+Add this workflow file: .github/workflows/migration-linter.yml
 ```bash
-// config/migration-linter.php
+name: Laravel Migration Linter
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: 8.3 }
+      - run: composer install --no-interaction
+      - run: php artisan migrate:lint --json > lint-report.json
 
-return [
-    'rules' => [
-        'AddNonNullableColumnWithoutDefault' => [
-            'enabled' => true,
-            'severity' => 'error',
-        ],
-        'MissingIndexOnForeignKey' => [
-            'enabled' => true,
-            'severity' => 'warning',
-        ],
-    ],
-
-    // Optional: Severity threshold for CI exit codes
-    'severity_threshold' => 'warning',
-
-    // Optional: Future use — baseline file path
-    'baseline_path' => storage_path('migration-linter-baseline.json'),
-];
 ```
-## 🧩 Available Severities
-
-- **info** — For minor notices or suggestions.  
-- **warning** — For risky or potentially inefficient schema changes.  
-- **error** — For dangerous changes (e.g., dropping tables, adding NOT NULL columns on large tables).
-
----
-
-| Rule ID                              | Description                                                                               | Default Severity |
-| ------------------------------------ | ----------------------------------------------------------------------------------------- | ---------------- |
-| `AddNonNullableColumnWithoutDefault` | Detects adding NOT NULL columns without default values (risky for existing large tables). | ⚠️ warning       |
-| `MissingIndexOnForeignKey`           | Detects foreign key-like columns (`*_id`) missing indexes or constraints.                 | ⚠️ warning       |
-
----
-
-## ⚙️ Advanced Features (Upcoming)
-
-| Feature | Description |
-| -------- | ------------ |
-| **Baseline Ignoring System** | Generate and apply a baseline to ignore known issues while tracking new ones. |
-| **Custom Rules** | Extend and register your own linting rules. |
-| **CI/CD Integration** | Use exit codes and JSON output to integrate into automated pipelines. |
-
----
-
-## 🧠 Example CI/CD Integration
-
-Run the linter as part of your pipeline:
-
-```yaml
-# GitHub Actions Example
-- name: Run Laravel Migration Linter
-  run: php artisan migrate:lint --json > lint-report.json
-  ```
-CI will fail automatically if issues meet or exceed the configured severity threshold.
-
-## 💡 Why Use This?
-✅ Prevents dangerous schema changes before deployment.
-⚙️ Enforces database best practices automatically.
-🧩 Extensible — you can create custom rules for your project.
-🚀 Safe for legacy projects (upcoming baseline feature).
-
 ---
 
 ## 🧑‍💻 Contributing
 Contributions are welcome!
 If you have an idea for a useful rule or enhancement, feel free to open a PR or issue.
 
-Fork the repository.
-
-Create a feature branch.
-
-Commit your changes and open a pull request.
-
 ---
 
 ## 🧾 License
-This package is open-source software licensed under the MIT license.
+Released under the MIT License.
+© 2025 Sufyan. All rights reserved.
 
+---
+
+## 🧩 2. Update `composer.json` Metadata  
+
+Add under the root object:  
+
+```json
+"homepage": "https://github.com/sufyan/laravel-migration-linter",
+"keywords": ["laravel", "migrations", "linter", "ci", "database", "schema"],
+"support": {
+    "issues": "https://github.com/sufyan/laravel-migration-linter/issues",
+    "source": "https://github.com/sufyan/laravel-migration-linter"
+}
 ---
 
 ## 🧠 Author
