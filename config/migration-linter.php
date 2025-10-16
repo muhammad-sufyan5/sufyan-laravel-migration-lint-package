@@ -81,9 +81,14 @@ return [
     */
 
     'rules' => [
-        'AddNonNullableColumnWithoutDefault' => true,
-        'MissingIndexOnForeignKey' => true,
-        'TypeChangeRisky' => true,
-        'DropColumnWithoutBackfill' => true,
+        'AddNonNullableColumnWithoutDefault' => [
+            'enabled' => true,
+            'severity' => 'warning',
+        ],
+        'MissingIndexOnForeignKey' => [
+            'enabled' => true,
+            'severity' => 'warning',
+        ],
     ],
+
 ];

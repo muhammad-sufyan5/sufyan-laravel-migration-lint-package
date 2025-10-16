@@ -24,15 +24,24 @@ class RuleEngine
         $map = [
             'AddNonNullableColumnWithoutDefault' => AddNonNullableColumnWithoutDefault::class,
             'MissingIndexOnForeignKey' => MissingIndexOnForeignKey::class,
-            // future rules go here...
         ];
 
         foreach ($map as $key => $class) {
-            if (config("migration-linter.rules.$key", false)) {
-                $this->rules[] = App::make($class);
+            $ruleConfig = config("migration-linter.rules.$key");
+
+            if (is_array($ruleConfig) && ($ruleConfig['enabled'] ?? false)) {
+                $rule = app($class);
+
+                // Override severity if specified in config
+                if (isset($ruleConfig['severity'])) {
+                    $rule->customSeverity = $ruleConfig['severity'];
+                }
+                
+                $this->rules[] = $rule;
             }
         }
     }
+
 
     /**
      * Run all enabled rules against parsed operations.

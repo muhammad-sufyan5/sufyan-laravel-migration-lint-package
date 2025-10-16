@@ -194,3 +194,26 @@ Run:
 ```bash
 php artisan migrate:lint
 
+
+## 🧩 Step 8 — Add Severity Levels for Rules
+
+### Goal
+Allow each linting rule to define its own severity level (`info`, `warning`, or `error`) and support overriding via configuration.
+
+### Actions Performed
+- Added a `severity()` method to the `AbstractRule` base class.
+- Updated the `warn()` helper to respect rule-specific severity.
+- Modified all existing rules (`AddNonNullableColumnWithoutDefault`, `MissingIndexOnForeignKey`) to define default severity.
+- Enhanced the configuration to allow per-rule overrides:
+  ```php
+  'rules' => [
+      'AddNonNullableColumnWithoutDefault' => [
+          'enabled' => true,
+          'severity' => 'error',
+      ],
+      'MissingIndexOnForeignKey' => [
+          'enabled' => true,
+          'severity' => 'warning',
+      ],
+  ],
+

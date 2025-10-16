@@ -12,6 +12,11 @@ class AddNonNullableColumnWithoutDefault extends AbstractRule
         return 'AddNonNullableColumnWithoutDefault';
     }
 
+    public function defaultSeverity(): string
+    {
+        return 'warning';
+    }
+
     public function description(): string
     {
         return 'Warns when adding a NOT NULL column without a default value to a large table.';

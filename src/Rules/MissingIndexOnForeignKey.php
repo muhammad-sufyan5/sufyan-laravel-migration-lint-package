@@ -12,6 +12,11 @@ class MissingIndexOnForeignKey extends AbstractRule
         return 'MissingIndexOnForeignKey';
     }
 
+    public function defaultSeverity(): string
+    {
+        return 'warning';
+    }
+
     public function description(): string
     {
         return 'Warns when a foreign key column is added without an index or foreign constraint.';

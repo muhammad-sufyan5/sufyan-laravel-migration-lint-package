@@ -8,6 +8,25 @@ use Sufyan\MigrationLinter\Support\Issue;
 abstract class AbstractRule
 {
     /**
+     * Default severity level for this rule.
+     */
+    public ?string $customSeverity = null;
+
+    public function severity(): string
+    {
+        // ✅ Priority: customSeverity (from config) > class-defined default > fallback warning
+        if ($this->customSeverity) {
+            return $this->customSeverity;
+        }
+
+        if (method_exists($this, 'defaultSeverity')) {
+            return $this->defaultSeverity();
+        }
+
+        return 'warning';
+    }
+
+    /**
      * A unique ID for this rule.
      */
     abstract public function id(): string;
@@ -32,7 +51,7 @@ abstract class AbstractRule
     {
         return new Issue(
             $this->id(),
-            'warning',
+            $this->severity(),
             $message,
             $operation->file,
             $operation->line ?? 0,
