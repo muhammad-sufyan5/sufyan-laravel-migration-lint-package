@@ -4,6 +4,9 @@ namespace Sufyan\MigrationLinter\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Sufyan\MigrationLinter\Support\Reporter;
+use Sufyan\MigrationLinter\Support\RuleEngine;
+use Sufyan\MigrationLinter\Support\MigrationParser;
 
 class LintMigrations extends Command
 {
@@ -28,24 +31,21 @@ class LintMigrations extends Command
         $this->info('🔍 Running Laravel Migration Linter...');
         $path = $this->option('path') ?: base_path('database/migrations');
 
-        if (! File::exists($path)) {
+        if (!File::exists($path)) {
             $this->error("Path not found: {$path}");
             return self::FAILURE;
         }
 
-        // For now, just simulate scanning logic
-        $this->line("📂 Scanning: {$path}");
-        $files = File::isFile($path) ? [$path] : File::allFiles($path);
+        $parser = new MigrationParser();
+        $operations = $parser->parse($path);
 
-        $this->line("Found " . count($files) . " migration(s).");
+        $engine = new RuleEngine();
+        $issues = $engine->run($operations);
 
-        foreach ($files as $file) {
-            $this->line(" - Linting: " . $file->getFilename());
-        }
+        $reporter = new Reporter($this->output);
+        $reporter->render($issues, (bool)$this->option('json'));
 
-        $this->newLine();
-        $this->info('✅ Lint completed successfully (no issues detected yet).');
-
-        return self::SUCCESS;
+        $threshold = config('migration-linter.severity_threshold', 'warning');
+        return $reporter->exitCode($issues, $threshold);
     }
 }

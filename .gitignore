@@ -24,3 +24,6 @@ coverage/
 # Cache & logs
 storage/
 *.log
+
+# Development workflow
+# DEVELOPMENT_WORKFLOW.md

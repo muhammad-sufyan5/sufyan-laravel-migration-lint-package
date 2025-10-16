@@ -50,6 +50,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Check All Tables
+    |--------------------------------------------------------------------------
+    |
+    | If true, the linter will check every table, not just those listed in
+    | "large_table_names". If false, only large tables will be checked.
+    |
+    */
+
+    'check_all_tables' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Excluded Paths
     |--------------------------------------------------------------------------
     |
