@@ -207,6 +207,7 @@ Allow each linting rule to define its own severity level (`info`, `warning`, or 
 - Modified all existing rules (`AddNonNullableColumnWithoutDefault`, `MissingIndexOnForeignKey`) to define default severity.
 - Enhanced the configuration to allow per-rule overrides:
   php
+  ```bash
   'rules' => [
       'AddNonNullableColumnWithoutDefault' => [
           'enabled' => true,
@@ -217,4 +218,5 @@ Allow each linting rule to define its own severity level (`info`, `warning`, or 
           'severity' => 'warning',
       ],
   ],
+  ```
 
