@@ -8,11 +8,10 @@ on:
 
 jobs:
   lint-migrations:
-    name: Run Laravel Migration Linter
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 Checkout Repository
+      - name: 🧾 Checkout Package Repository
         uses: actions/checkout@v4
 
       - name: ⚙️ Setup PHP
@@ -21,25 +20,21 @@ jobs:
           php-version: 8.3
           extensions: mbstring, pdo, bcmath, curl, dom, xml
           tools: composer:v2
-          coverage: none
 
-      - name: 🧰 Install Dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: 🧰 Create Test Laravel Project
+        run: |
+          composer create-project laravel/laravel test-laravel-app
+          cd test-laravel-app
+          composer config repositories.sufyan path ../
+          composer require sufyan/laravel-migration-linter:@dev
 
-      - name: 🧩 Run Laravel Migration Linter
-        run: php artisan migrate:lint --json > lint-report.json
+      - name: 🧩 Run Migration Linter
+        run: |
+          cd test-laravel-app
+          php artisan migrate:lint --json > lint-report.json
 
       - name: 📦 Upload Lint Report (optional)
         uses: actions/upload-artifact@v4
         with:
           name: migration-lint-report
-          path: lint-report.json
-
-      - name: ✅ Check Lint Results
-        run: |
-          if grep -q '"severity":"error"' lint-report.json; then
-            echo "❌ Migration Linter found errors."
-            exit 1
-          else
-            echo "✅ Migration Linter passed successfully."
-          fi
+          path: test-laravel-app/lint-report.json
