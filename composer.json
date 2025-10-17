@@ -40,7 +40,20 @@
   "conflict": {
     "laravel/framework": "<10.0"
   },
-  "minimum-stability": "dev",
+  "homepage": "https://github.com/muhammad-sufyan5/laravel-migration-linter",
+  "keywords": [
+    "laravel",
+    "migrations",
+    "linter",
+    "ci",
+    "database",
+    "schema"
+  ],
+  "support": {
+    "issues": "https://github.com/muhammad-sufyan5/laravel-migration-linter/issues",
+    "source": "https://github.com/muhammad-sufyan5/laravel-migration-linter"
+  },
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "config": {
     "optimize-autoloader": true,

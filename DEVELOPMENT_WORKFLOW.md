@@ -292,3 +292,23 @@ Publish the package to Packagist for global Composer availability.
    git tag -a v1.0.0 -m "First stable release"
    git push origin v1.0.0
    ```
+## 🧩 Step 13 — Final Polish & Visibility
+
+### Goal
+Add visual and documentation enhancements to improve the professional appearance and trustworthiness of the package on GitHub and Packagist.
+
+### Actions Performed
+- Added badges for CI, version, downloads, and license.  
+- Created `CHANGELOG.md` to track version history.  
+- Enhanced composer.json with support links and homepage.  
+- Verified Packagist auto-update hook connection.  
+- Optionally added marketing assets (screenshots, social post).  
+
+### Verification
+1. Visit the GitHub README to confirm badges render correctly.  
+2. Check Packagist page for updated metadata and latest version.  
+3. Run `git tag -a v1.1.0 -m "Second release"` and push to verify auto-sync.
+
+### Notes
+This final step completes the MVP cycle of the Laravel Migration Linter package.  
+Future steps may include automated tests, new rules, and community engagement.
