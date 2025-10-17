@@ -23,10 +23,10 @@ jobs:
 
       - name: 🧰 Create Test Laravel Project
         run: |
-          composer create-project laravel/laravel test-laravel-app
+          composer create-project laravel/laravel test-laravel-app --quiet
           cd test-laravel-app
-          composer config repositories.sufyan path ../
-          composer require sufyan/laravel-migration-linter:@dev --ignore-platform-reqs --no-interaction
+          composer config repositories.sufyandev path ../
+          composer require sufyandev/laravel-migration-linter:@dev --ignore-platform-reqs --no-interaction
 
       # - name: 🧩 Run Migration Linter
       #   run: |

@@ -279,4 +279,16 @@ Prepare the package for public release by writing clear and professional documen
 
 ### Notes
 This step completes the public-facing documentation needed for open-source distribution. 
-Next: **Step 12 — Packagist Release & Version Tagging**
+
+## 🧩 Step 12 — Packagist Release & Version Tagging
+
+### Goal
+Publish the package to Packagist for global Composer availability.
+
+### Steps
+1. **Push to GitHub** — Ensure repository is public and code is committed.  
+2. **Tag Release** — Run:
+   ```bash
+   git tag -a v1.0.0 -m "First stable release"
+   git push origin v1.0.0
+   ```

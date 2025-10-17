@@ -18,7 +18,7 @@ A lightweight Laravel package that **analyzes your database migrations** and war
 ## 📦 Installation
 Install via Composer:  
 ```bash
-composer require sufyan/laravel-migration-linter --dev
+composer require sufyandev/laravel-migration-linter --dev
 ```
 The package will auto-register via Laravel’s package discovery.
 
