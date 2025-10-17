@@ -1,5 +1,5 @@
 {
-  "name": "sufyan/laravel-migration-linter",
+  "name": "sufyandev/laravel-migration-linter",
   "description": "Static analyzer that lints Laravel migrations for risky patterns",
   "type": "library",
   "license": "MIT",
