@@ -42,8 +42,6 @@ php artisan migrate:lint
 ```
 ### You can use the following flags and options to customize behavior:
 
-You can use the following flags and options to customize behavior:
-
 | Option / Flag         | Description                                                                                                                                                                        |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--generate-baseline` | Create a JSON file (`migration-linter-baseline.json`) that records all current issues so they can be ignored in future runs. Useful for introducing the linter to legacy projects. |
@@ -133,20 +131,6 @@ If you have an idea for a useful rule or enhancement, feel free to open a PR or 
 Released under the MIT License.
 © 2025 Sufyan. All rights reserved.
 
----
-
-## 🧩 2. Update `composer.json` Metadata  
-
-Add under the root object:  
-
-```json
-"homepage": "https://github.com/sufyan/laravel-migration-linter",
-"keywords": ["laravel", "migrations", "linter", "ci", "database", "schema"],
-"support": {
-    "issues": "https://github.com/sufyan/laravel-migration-linter/issues",
-    "source": "https://github.com/sufyan/laravel-migration-linter"
-}
-```
 ---
 
 ## 🧠 Author
