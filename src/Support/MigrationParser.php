@@ -14,11 +14,17 @@ class MigrationParser
      */
     public function parse(string $path): array
     {
-        $files = File::isFile($path)
-            ? [$path]
-            : File::allFiles($path);
-
         $operations = [];
+
+        if (File::isFile($path)) {
+            // Single file mode
+            $content = File::get($path);
+            $fileOperations = $this->parseFile($content, basename($path), $path);
+            return $fileOperations;
+        }
+
+        // Directory mode
+        $files = File::allFiles($path);
 
         foreach ($files as $file) {
             $content = File::get($file->getPathname());
@@ -28,6 +34,7 @@ class MigrationParser
 
         return $operations;
     }
+
 
     /**
      * Parse a single migration file and extract schema operations.
