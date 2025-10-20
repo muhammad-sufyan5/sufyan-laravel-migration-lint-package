@@ -50,24 +50,29 @@ Option / Flag	Description
 
 Example Usage
 # Lint all migrations
+```bash
 php artisan migrate:lint
-
+```
 # Generate a new baseline file (ignore current issues)
+```bash
 php artisan migrate:lint --generate-baseline
-
+```
 # Run only on a specific path
+```bash
 php artisan migrate:lint --path=database/migrations/2024_01_01_create_users_table.php
-
+```
 # Export lint report as JSON (for CI)
+```bash
 php artisan migrate:lint --json > storage/lint-report.json
-
-# Use a custom baseline file
+```
+### Use a custom baseline file
+```bash
 php artisan migrate:lint --baseline=storage/custom-baseline.json
 ```
----
 
 
-⚙️ Publishing Configuration
+## ⚙️ Publishing Configuration
+
 You can publish the configuration file to customize rule settings:
 
 ```bash
@@ -79,7 +84,7 @@ config/migration-linter.php
 ```
 
 
-⚙️ Configuration
+## ⚙️ Configuration
 
 Default config file (config/migration-linter.php):
 ```bash
@@ -99,7 +104,7 @@ return [
 ];
 ```
 
-🧰 GitHub Actions Integration
+## 🧰 GitHub Actions Integration
 Add this workflow file: .github/workflows/migration-linter.yml
 ```bash
 name: Laravel Migration Linter
