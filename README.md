@@ -1,6 +1,9 @@
-## 📸 Screenshot
+<h2>📸 Screenshot</h2>
+<p>
+  <img src="assets/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
+  <sub>Screenshot from v1.0.0</sub>
+</p>
 
-![Laravel Migration Linter report](assets/migrate-lint-report.png)
 
 # 🧩 Laravel Migration Linter  
 [![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
