@@ -62,7 +62,7 @@ php artisan migrate:lint --generate-baseline
 ```
 ### Run only on a specific path
 ```bash
-php artisan migrate:lint --path=database/migrations/2024_01_01_create_users_table.php
+php artisan migrate:lint --path=database/migrations
 ```
 ### Export lint report as JSON (for CI)
 ```bash
