@@ -89,6 +89,20 @@ return [
             'enabled' => true,
             'severity' => 'warning',
         ],
+        'DropColumnWithoutBackup' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
+        'AddUniqueConstraintOnNonEmptyColumn' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
+        'FloatColumnForMoney' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
+
+
     ],
 
 ];

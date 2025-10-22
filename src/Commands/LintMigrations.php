@@ -15,6 +15,7 @@ class LintMigrations extends Command
      */
     protected $signature = 'migrate:lint 
                             {--generate-baseline : Create json file to skip existing migrations}
+                            {--compact : Display simplified text-based output for small terminals}
                             {--path= : Path to a specific migration file or folder}
                             {--json : Output results in JSON format}
                             {--baseline= : Path to baseline file for ignoring known issues}';

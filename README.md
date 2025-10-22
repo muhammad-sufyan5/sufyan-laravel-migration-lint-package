@@ -18,6 +18,9 @@ A lightweight Laravel package that **analyzes your database migrations** and war
 ## 🚀 Features
 ✅ Detects dangerous migration operations (like adding non-nullable columns without defaults).  
 ✅ Warns about missing indexes on foreign key columns.  
+✅ Warns when columns are dropped (data loss risk).  
+✅ Warns when float() is used for money fields (precision issue).  
+✅ Warns when adding unique constraints to existing data.   
 ✅ Configurable rule severities (info, warning, error).  
 ✅ Baseline support to ignore known legacy issues.  
 ✅ CLI report with JSON output & colorized table.  
@@ -71,6 +74,10 @@ php artisan migrate:lint --json > storage/lint-report.json
 ### Use a custom baseline file
 ```bash
 php artisan migrate:lint --baseline=storage/custom-baseline.json
+```
+### Improving usability for smaller terminal sizes
+```bash
+php artisan migrate:lint --compact
 ```
 
 ## ⚙️ Publishing Configuration

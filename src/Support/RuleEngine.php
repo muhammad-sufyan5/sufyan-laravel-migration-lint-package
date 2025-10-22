@@ -3,9 +3,11 @@
 namespace Sufyan\MigrationLinter\Support;
 
 use Illuminate\Support\Facades\App;
-use Sufyan\MigrationLinter\Rules\AbstractRule;
+use Sufyan\MigrationLinter\Rules\FloatColumnForMoney;
+use Sufyan\MigrationLinter\Rules\DropColumnWithoutBackup;
 use Sufyan\MigrationLinter\Rules\MissingIndexOnForeignKey;
 use Sufyan\MigrationLinter\Rules\AddNonNullableColumnWithoutDefault;
+use Sufyan\MigrationLinter\Rules\AddUniqueConstraintOnNonEmptyColumn;
 
 class RuleEngine
 {
@@ -24,6 +26,9 @@ class RuleEngine
         $map = [
             'AddNonNullableColumnWithoutDefault' => AddNonNullableColumnWithoutDefault::class,
             'MissingIndexOnForeignKey' => MissingIndexOnForeignKey::class,
+            'DropColumnWithoutBackup' => DropColumnWithoutBackup::class,
+            'AddUniqueConstraintOnNonEmptyColumn' => AddUniqueConstraintOnNonEmptyColumn::class,
+            'FloatColumnForMoney' => FloatColumnForMoney::class,
         ];
 
         foreach ($map as $key => $class) {
