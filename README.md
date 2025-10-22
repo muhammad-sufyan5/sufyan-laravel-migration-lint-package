@@ -109,7 +109,6 @@ return [
     ],
 ];
 ```
-
 ## 🧰 GitHub Actions Integration
 Add this workflow file: .github/workflows/migration-linter.yml
 ```bash
