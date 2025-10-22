@@ -75,6 +75,10 @@ php artisan migrate:lint --json > storage/lint-report.json
 ```bash
 php artisan migrate:lint --baseline=storage/custom-baseline.json
 ```
+### Improving usability for smaller terminal sizes
+```bash
+php artisan migrate:lint --compact
+```
 
 ## ⚙️ Publishing Configuration
 
