@@ -5,6 +5,7 @@ namespace Sufyan\MigrationLinter\Support;
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Illuminate\Support\Str;
 
 class Reporter
 {
@@ -17,9 +18,10 @@ class Reporter
      *
      * @param  Issue[]  $issues
      * @param  bool  $json
+     * @param  bool  $compact
      * @return void
      */
-    public function render(array $issues, bool $json = false): void
+    public function render(array $issues, bool $json = false, bool $compact = false): void
     {
         if ($json) {
             $this->renderJson($issues);
@@ -31,10 +33,28 @@ class Reporter
             return;
         }
 
-        // Add color styles
         $this->addColorStyles();
 
+        // Compact mode
+        if ($compact) {
+            $this->renderCompact($issues);
+            return;
+        }
+
+        $this->renderTable($issues);
+    }
+
+    /**
+     * Render as formatted table with truncation for small terminals.
+     */
+    protected function renderTable(array $issues): void
+    {
         $this->output->writeln("\n<options=bold>⚠️  Lint Report</>");
+
+        $terminalWidth = (int) (exec('tput cols') ?: 120);
+        $maxMessage = $terminalWidth > 120 ? 80 : 50;
+        $maxFile = $terminalWidth > 120 ? 40 : 25;
+
         $table = new Table($this->output);
         $table->setHeaders(['File', 'Rule', 'Column', 'Severity', 'Message']);
 
@@ -48,16 +68,40 @@ class Reporter
             };
 
             $rows[] = [
-                $issue->file,
+                Str::limit($issue->file, $maxFile),
                 $issue->ruleId,
-                $issue->snippet ?? '-',  // we'll use this field for column name display
+                $issue->snippet ?? '-',
                 "<fg={$severityColor}>{$issue->severity}</>",
-                $issue->message,
+                Str::limit($issue->message, $maxMessage),
             ];
         }
 
         $table->setRows($rows);
         $table->render();
+
+        $this->output->newLine();
+        $this->output->writeln("<comment>Found " . count($issues) . " issue(s)</comment>");
+    }
+
+    /**
+     * Render compact single-line mode.
+     */
+    protected function renderCompact(array $issues): void
+    {
+        $this->output->writeln("⚠️ Compact Lint Report\n");
+
+        foreach ($issues as $issue) {
+            $color = match ($issue->severity) {
+                'error' => 'red',
+                'warning' => 'yellow',
+                'info' => 'cyan',
+                default => 'white',
+            };
+
+            $this->output->writeln(
+                "• <fg={$color}>[{$issue->severity}]</> {$issue->ruleId} — {$issue->message} ({$issue->file})"
+            );
+        }
 
         $this->output->newLine();
         $this->output->writeln("<comment>Found " . count($issues) . " issue(s)</comment>");
@@ -73,7 +117,7 @@ class Reporter
             'severity' => $issue->severity,
             'message' => $issue->message,
             'file' => $issue->file,
-            'line' => $issue->line,
+            'line' => $issue->line ?? null,
         ], $issues);
 
         $this->output->writeln(json_encode($jsonData, JSON_PRETTY_PRINT));
