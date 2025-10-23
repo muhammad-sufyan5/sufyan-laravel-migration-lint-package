@@ -2,14 +2,17 @@
 # 📘 Laravel Migration Linter - Documentation Config
 # Theme: Just the Docs (for GitHub Pages)
 # ------------------------------------------------------------
-
+---
+# force disable default theme injection
+theme: null
+remote_theme: just-the-docs/just-the-docs@v0.5.4
+---
 title: Laravel Migration Linter
 description: Analyze and prevent risky Laravel migration changes before they reach production.
 baseurl: "" # Leave empty for project site (e.g. /laravel-migration-linter if needed)
 url: "https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package"
 
 # Theme
-remote_theme: just-the-docs/just-the-docs@v0.5.4
 color_scheme: auto
 logo: /assets/migrate-lint-report.png
 
