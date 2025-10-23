@@ -24,7 +24,7 @@ A lightweight Laravel package that **analyzes your database migrations** and war
 
 <h2>📸 Screenshot</h2>
 <p>
-  <img src="migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
+  <img src="./assets/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
 </p>
   <sub>Screenshot from v1.0.0</sub>
 

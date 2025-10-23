@@ -1,0 +1,65 @@
+# ------------------------------------------------------------
+# 📘 Laravel Migration Linter - Documentation Config
+# Theme: Just the Docs (for GitHub Pages)
+# ------------------------------------------------------------
+
+title: Laravel Migration Linter
+description: Analyze and prevent risky Laravel migration changes before they reach production.
+baseurl: "" # Leave empty for project site (e.g. /laravel-migration-linter if needed)
+url: "https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package"
+
+# Theme
+theme: just-the-docs
+color_scheme: auto
+logo: /assets/migrate-lint-report.png
+
+# Directory for docs
+collections:
+  docs:
+    output: true
+    permalink: /:path/
+
+# Navigation structure (left sidebar)
+nav:
+  - title: "Getting Started"
+    children:
+      - title: "Introduction"
+        url: /docs/index
+      - title: "Installation"
+        url: /docs/installation
+      - title: "Usage"
+        url: /docs/usage
+  - title: "Configuration"
+    url: /docs/configuration
+  - title: "Rules"
+    url: /docs/rules
+  - title: "Custom Rules"
+    url: /docs/writing-custom-rules
+  - title: "CI/CD Integration"
+    url: /docs/ci-cd
+  - title: "Changelog"
+    url: /docs/changelog
+  - title: "Contributing"
+    url: /README   # uses your main repo README for contribution info
+
+# Footer settings
+footer_content: "© 2025 Sufyan — MIT License"
+last_edit_timestamp: true
+last_edit_time_format: "%b %e, %Y"
+
+# Search
+search_enabled: true
+search_tokenizer_separator: /[\s/]+/
+
+# GitHub integration (top-right link)
+aux_links:
+  "View on GitHub":
+    - "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package"
+
+# Set to true if your docs live in /docs folder
+defaults:
+  - scope:
+      path: "docs"
+    values:
+      layout: default
+      nav_order: 1
