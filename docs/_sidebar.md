@@ -1,0 +1,8 @@
+- [🏠 Introduction](index.md)
+- [⚙️ Installation](installation.md)
+- [🧩 Usage](usage.md)
+- [🧱 Configuration](configuration.md)
+- [📏 Rules](rules.md)
+- [🧠 Writing Custom Rules](writing-custom-rules.md)
+- [🤖 CI/CD Integration](ci-cd.md)
+- [🗓️ Changelog](changelog.md)
