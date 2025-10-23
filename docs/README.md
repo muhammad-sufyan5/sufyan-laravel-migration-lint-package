@@ -1,9 +1,3 @@
-<h2>📸 Screenshot</h2>
-<p>
-  <img src="assets/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
-</p>
-  <sub>Screenshot from v1.0.0</sub>
-
 
 # 🧩 Laravel Migration Linter  
 [![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
@@ -27,6 +21,12 @@ A lightweight Laravel package that **analyzes your database migrations** and war
 ✅ Ready for CI/CD integration (GitHub Actions support).  
 
 ---
+
+<h2>📸 Screenshot</h2>
+<p>
+  <img src="migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
+</p>
+  <sub>Screenshot from v1.0.0</sub>
 
 ## 📦 Installation
 Install via Composer:  
@@ -133,12 +133,6 @@ If you have an idea for a useful rule or enhancement, feel free to open a PR or 
 
 ---
 
-## 🧾 License
-Released under the MIT License.
-© 2025 Sufyan. All rights reserved.
-
----
-
 ## 🧠 Author
 Muhammad Sufyan
 📧 muhammadsufyanwebdeveloper@gmail.com
@@ -146,6 +140,8 @@ Muhammad Sufyan
 
 “Smart developers don’t debug production — they lint migrations.”
 
-📚 **Full Documentation:**  
-For complete usage, configuration, and examples — visit  
-👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package)
+---
+
+## 🧾 License
+Released under the MIT License.
+© 2025 Sufyan. All rights reserved.
