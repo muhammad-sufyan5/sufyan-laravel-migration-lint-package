@@ -9,7 +9,7 @@ baseurl: "" # Leave empty for project site (e.g. /laravel-migration-linter if ne
 url: "https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package"
 
 # Theme
-remote_theme: just-the-docs/just-the-docs
+remote_theme: just-the-docs/just-the-docs@v0.5.4
 color_scheme: auto
 logo: /assets/migrate-lint-report.png
 
