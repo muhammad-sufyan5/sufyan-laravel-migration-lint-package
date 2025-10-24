@@ -36,10 +36,12 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          routeBasePath: "/", // make docs the homepage
+          routeBasePath: "/docs", // make docs the homepage
           sidebarPath: "./sidebars.js",
           editUrl:
             "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/tree/main/docs-site/",
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
         },
         blog: false, // disable blog for a clean docs-only setup
         theme: {
@@ -51,13 +53,29 @@ const config = {
 
   // Theme configuration
   themeConfig: {
+    onBrokenLinks: "warn", // instead of 'throw'
+    onBrokenMarkdownLinks: "warn",
+
     // Metadata for SEO
     metadata: [
       {
-        name: "keywords",
-        content: "Laravel, migration, linter, database, CI/CD, PHP",
+        name: "description",
+        content:
+          "Laravel Migration Linter — a lightweight tool to analyze and prevent risky Laravel migration changes before production.",
       },
-      { name: "author", content: "Muhammad Sufyan" },
+      {
+        name: "keywords",
+        content:
+          "Laravel, migrations, linter, PHP, CI/CD, database, schema, sufyandev",
+      },
+      { property: "og:title", content: "Laravel Migration Linter" },
+      {
+        property: "og:description",
+        content:
+          "Analyze your database migrations before they break production.",
+      },
+      { property: "og:image", content: "img/logo.png" },
+      { property: "twitter:card", content: "summary_large_image" },
     ],
 
     // Navbar
@@ -65,10 +83,10 @@ const config = {
       title: "Laravel Migration Linter",
       logo: {
         alt: "Linter Logo",
-        src: "img/logo.svg",
+        src: "img/logo.jpeg",
       },
       items: [
-        { to: '/', label: 'Docs', position: 'left' },
+        { to: "/docs/", label: "Docs", position: "left" },
         {
           href: "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package",
           label: "GitHub",
@@ -84,12 +102,13 @@ const config = {
         {
           title: "Documentation",
           items: [
-            { label: "Introduction", to: "/" },
-            { label: "Installation", to: "/installation" },
-            { label: "Usage", to: "/usage" },
-            { label: "Configuration", to: "/configuration" },
+            { label: "Introduction", to: "/docs/" },
+            { label: "Installation", to: "/docs/installation" },
+            { label: "Usage", to: "/docs/usage" },
+            { label: "Configuration", to: "/docs/configuration" },
           ],
         },
+
         {
           title: "Community",
           items: [

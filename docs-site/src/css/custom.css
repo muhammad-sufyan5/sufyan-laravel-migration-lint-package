@@ -28,3 +28,83 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* 🌟 Laravel Migration Linter Custom Hero Section */
+
+.hero-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  padding: 6rem 1rem 8rem;
+}
+
+[data-theme='dark'] .hero-main {
+  background: linear-gradient(180deg, #181818 0%, #101010 100%);
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ifm-color-primary);
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  color: var(--ifm-color-content-secondary);
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.hero-buttons .button {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.9rem 1.6rem;
+  transition: all 0.2s ease;
+}
+
+.hero-buttons .button--primary {
+  background-color: #ff2d20;
+  color: #fff;
+  border: none;
+}
+
+.hero-buttons .button--primary:hover {
+  background-color: #e0291f;
+}
+
+.hero-buttons .github-button {
+  border: 2px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+}
+
+.hero-buttons .github-button:hover {
+  background-color: var(--ifm-color-primary);
+  color: #fff;
+}
+
+.hero-image {
+  text-align: center;
+}
+
+.hero-image img {
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+}
+
+.hero-caption {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
