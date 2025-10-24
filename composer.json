@@ -1,6 +1,6 @@
 {
   "name": "sufyandev/laravel-migration-linter",
-  "description": "Static analyzer that lints Laravel migrations for risky patterns",
+  "description": "A lightweight Laravel package that analyzes and warns about risky database migration changes before they reach production.",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -50,8 +50,8 @@
     "schema"
   ],
   "support": {
-    "issues": "https://github.com/muhammad-sufyan5/laravel-migration-linter/issues",
-    "source": "https://github.com/muhammad-sufyan5/laravel-migration-linter"
+    "issues": "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/issues",
+    "source": "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
