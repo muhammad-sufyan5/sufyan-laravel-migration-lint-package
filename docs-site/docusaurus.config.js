@@ -141,6 +141,23 @@ const config = {
     },
   },
 
+  plugins: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        hashed: true,
+        indexDocs: true,
+        docsRouteBasePath: "/docs",
+        highlightSearchTermsOnTargetPage: true,
+        searchResultLimits: 10,
+        indexBlog: false,
+      language: 'en',
+      // 👇 This forces search index generation during `npm run start`
+      docsDir: 'docs',
+      },
+    ],
+  ],
+
   // Future flag for Docusaurus v4
   future: {
     v4: true,

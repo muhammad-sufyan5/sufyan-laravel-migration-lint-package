@@ -108,3 +108,22 @@
   opacity: 0.8;
   margin-top: 0.5rem;
 }
+
+
+/* Local searchbar css until Algolia reviewed */
+
+.DocSearch-Button {
+  border-radius: 6px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+}
+
+.DocSearch-Button:hover {
+  border-color: #ff2d20;
+  background: #fff5f5;
+}
+
+[data-theme='dark'] .DocSearch-Button {
+  background: #1e1e1e;
+  border: 1px solid #333;
+}
