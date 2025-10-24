@@ -40,7 +40,7 @@
   "conflict": {
     "laravel/framework": "<10.0"
   },
-  "homepage": "https://github.com/muhammad-sufyan5/laravel-migration-linter",
+  "homepage": "https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/",
   "keywords": [
     "laravel",
     "migrations",

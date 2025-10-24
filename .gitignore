@@ -2,6 +2,11 @@
 /vendor/
 composer.lock
 
+# Ignore build
+build/
+.docusaurus/
+
+
 # Node (if you ever add npm)
 node_modules/
 npm-debug.log
