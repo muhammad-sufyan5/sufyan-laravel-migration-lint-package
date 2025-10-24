@@ -5,7 +5,8 @@
 
 # Disable GitHub’s default Primer theme and use Just the Docs
 theme: null
-remote_theme: just-the-docs/just-the-docs@v0.4.0
+# remote_theme: just-the-docs/just-the-docs@v0.4.0
+theme: jekyll-theme-cayman
 
 # Site metadata
 title: Laravel Migration Linter
