@@ -87,6 +87,7 @@ const config = {
       },
       items: [
         { to: "/docs/", label: "Docs", position: "left" },
+        { type: 'search', position: 'left', className: 'navbar-search-centered' },
         {
           href: "https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package",
           label: "GitHub",
