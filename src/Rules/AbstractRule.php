@@ -47,7 +47,8 @@ abstract class AbstractRule
     /**
      * Helper: create a warning Issue quickly.
      */
-    protected function warn(Operation $operation, string $message): Issue
+    // ⬇️ Accept optional $column so rules can pass context
+    protected function warn(Operation $operation, string $message, ?string $column = null): Issue
     {
         return new Issue(
             $this->id(),
@@ -55,7 +56,7 @@ abstract class AbstractRule
             $message,
             $operation->file,
             $operation->line ?? 0,
-            $operation->column ?? null
+            $column ?? $operation->column
         );
     }
 }

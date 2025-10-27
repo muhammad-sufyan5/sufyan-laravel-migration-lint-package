@@ -16,7 +16,7 @@ export default function Home() {
           </Heading>
 
           <p className="hero-subtitle">
-            Analyze and lint your Laravel migrations <br /> before they break
+            Analyze and lint your Laravel migrations before they break
             production.
           </p>
 

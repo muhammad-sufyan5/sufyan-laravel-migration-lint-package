@@ -3,11 +3,18 @@
 namespace Sufyan\MigrationLinter\Rules;
 
 use Sufyan\MigrationLinter\Support\Operation;
-use Sufyan\MigrationLinter\Support\Issue;
 
-class AddUniqueConstraintOnNonEmptyColumn
+class AddUniqueConstraintOnNonEmptyColumn extends AbstractRule
 {
-    public static string $id = 'AddUniqueConstraintOnNonEmptyColumn';
+    public function id(): string
+    {
+        return 'AddUniqueConstraintOnNonEmptyColumn';
+    }
+
+    public function defaultSeverity(): string
+    {
+        return 'warning'; // overridable via config
+    }
 
     public function description(): string
     {
@@ -15,44 +22,61 @@ class AddUniqueConstraintOnNonEmptyColumn
     }
 
     /**
-     * @param Operation $operation
-     * @return array<Issue>
+     * @return \Sufyan\MigrationLinter\Support\Issue[]
      */
     public function check(Operation $operation): array
     {
         $issues = [];
 
-        // Detect patterns like $table->unique('email')
+        // --- Case 1: explicit $table->unique('email') or $table->unique(['email','tenant_id'])
         if ($operation->method === 'unique') {
             $columns = [];
 
-            if (preg_match_all("/'([^']+)'/", $operation->args, $matches)) {
-                $columns = $matches[1];
+            if (preg_match_all("/'([^']+)'/", $operation->args ?? '', $m)) {
+                $columns = $m[1];
             }
 
-            foreach ($columns as $column) {
-                $issues[] = new Issue(
-                    ruleId: self::$id,
-                    file: $operation->file,
-                    message: "Adding unique constraint to '{$column}' may fail if duplicates already exist in '{$operation->table}'.",
-                    severity: 'warning',
-                    snippet: $column
+            // Emit one issue per column (simple + matches your previous behavior)
+            foreach ($columns as $col) {
+                $issues[] = $this->warn(
+                    $operation,
+                    "Adding unique constraint to '{$col}' may fail if duplicates already exist in '{$operation->table}'.",
+                    $col
+                );
+            }
+
+            // Handle generic call with no detectable column name
+            if (empty($columns)) {
+                $issues[] = $this->warn(
+                    $operation,
+                    "Adding a unique constraint may fail if duplicates already exist in '{$operation->table}'."
                 );
             }
 
             return $issues;
         }
 
-        // Detect chained unique() calls like $table->string('email')->unique();
-        if (in_array($operation->method, ['string', 'integer', 'bigInteger', 'uuid', 'char', 'text'])
-            && str_contains($operation->args, 'unique')
-        ) {
-            $issues[] = new Issue(
-                ruleId: self::$id,
-                file: $operation->file,
-                message: "Adding unique constraint inline on '{$operation->method}' field in '{$operation->table}' may fail on existing data.",
-                severity: 'warning'
-            );
+        // --- Case 2: chained inline ->unique() on a column definition, e.g. $table->string('email')->unique()
+        $columnTypes = ['string', 'integer', 'bigInteger', 'uuid', 'char', 'text'];
+        if (in_array($operation->method, $columnTypes, true)) {
+            $hasInlineUnique =
+                ($operation->rawCode && str_contains($operation->rawCode, '->unique('))
+                || ($operation->args && str_contains($operation->args, 'unique'));
+
+            if ($hasInlineUnique) {
+                $col = null;
+                if (preg_match("/'([^']+)'/", $operation->args ?? '', $m)) {
+                    $col = $m[1];
+                }
+
+                $issues[] = $this->warn(
+                    $operation,
+                    $col
+                        ? "Adding unique constraint inline on '{$col}' in '{$operation->table}' may fail on existing data."
+                        : "Adding inline unique constraint in '{$operation->table}' may fail on existing data.",
+                    $col
+                );
+            }
         }
 
         return $issues;
