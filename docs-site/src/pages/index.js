@@ -38,11 +38,11 @@ export default function Home() {
 
           <div className="hero-image">
             <img
-              src="/sufyan-laravel-migration-lint-package/img/hero-preview.png"
+              src="/sufyan-laravel-migration-lint-package/img/preview.png"
               alt="Laravel Migration Linter Preview"
-              width="850"
+              width="800"
+              height="250"
             />
-            <p className="hero-caption">Screenshot from v1.1.0</p>
           </div>
         </section>
       </main>
