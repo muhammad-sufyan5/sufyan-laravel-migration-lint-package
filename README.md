@@ -1,6 +1,6 @@
 <h2>📸 Screenshot</h2>
 <p>
-  <img src="assets/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900">
+  <img src="assets/preview.png" alt="Laravel Migration Linter report" width="900">
 </p>
   <sub>Screenshot from v1.0.0</sub>
 
