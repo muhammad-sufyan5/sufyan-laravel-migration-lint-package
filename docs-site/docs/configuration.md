@@ -4,18 +4,49 @@ title: 🧱 Configuration
 sidebar_position: 4
 ---
 
-## ⚙️ Configuration
-
-The Laravel Migration Linter ships with a default configuration file that defines all available rules and severity thresholds.
+The **Laravel Migration Linter** ships with a configurable file that defines which rules are active and how severe their findings should be.  
+You can customize this file to match your team's migration safety standards.
 
 ---
 
-## 📄 Default Config File
+## ⚙️ Publishing the Config
+
+If you haven’t already, publish the configuration file to your app:
+
+```bash
+php artisan vendor:publish --tag="migration-linter-config"
+```
+This creates:
+```arduino
+config/migration-linter.php
+```
+---
+
+### 📄 Default Config File
 
 ```php
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Severity Threshold
+    |--------------------------------------------------------------------------
+    |
+    | This controls the exit code behavior of the linter.
+    | - If set to "error", the command will exit with 1 whenever an "error" rule triggers.
+    | - If set to "warning", only "warning" or higher severities are reported.
+    |
+    */
     'severity_threshold' => 'warning',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rules
+    |--------------------------------------------------------------------------
+    |
+    | Enable, disable, or adjust severity for any built-in or custom rules.
+    | You can also register your own rules by adding their class name or short key.
+    |
+    */
     'rules' => [
         'AddNonNullableColumnWithoutDefault' => [
             'enabled'  => true,
@@ -37,13 +68,41 @@ return [
             'enabled'  => true,
             'severity' => 'warning',
         ],
+
+        // Example custom rule (auto-discovered from App\MigrationRules)
+        'NoUnsignedBigIntRule' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+        ],
     ],
 ];
-
 ```
-## 🧩 Severity Levels
-| Level     | Description                          | Exit Code |
-| --------- | ------------------------------------ | --------- |
-| `info`    | Informational only                   | 0         |
-| `warning` | May cause performance issues or risk | 0         |
-| `error`   | Serious migration-breaking issues    | 1         |
+---
+
+### 🧩 Severity Levels
+
+| Level     | Meaning                              | Exit Code | Recommended Usage                            |
+| --------- | ------------------------------------ | --------- | -------------------------------------------- |
+| `info`    | Advisory only; does not affect CI    | 0         | Local hints or code-style warnings           |
+| `warning` | Possible performance or safety issue | 0         | Default level for most rules                 |
+| `error`   | Migration-breaking or data-loss risk | 1         | Use in CI/CD pipelines to block risky merges |
+
+---
+
+### 🧠 Notes
+
+- You can disable a rule entirely by setting 'enabled' => false.
+- To treat warnings as failures, change the global threshold to 'error'.
+- Custom rules defined in App\MigrationRules or any namespaced class are automatically discovered — no code changes needed in the package.
+- See [🧠 Writing Custom Rules](./writing-custom-rules.md) for detailed examples of defining your own rules.
+
+
+✅ Pro Tip: Commit your config/migration-linter.php file to version control so your whole team shares the same linting standards.
+
+---
+
+### 🔍 Why this version works better
+- Reflects your new **dynamic discovery system** for custom rules.  
+- Explains the `severity_threshold` clearly (many devs miss that it affects exit codes).  
+- Links to the “Writing Custom Rules” page for continuity.  
+- Perfectly matches your documentation tone and emoji style.

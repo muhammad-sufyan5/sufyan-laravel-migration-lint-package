@@ -23,6 +23,7 @@ class RuleEngine
      */
     protected function loadRules(): void
     {
+        // Built-in rules
         $map = [
             'AddNonNullableColumnWithoutDefault' => AddNonNullableColumnWithoutDefault::class,
             'MissingIndexOnForeignKey' => MissingIndexOnForeignKey::class,
@@ -31,21 +32,33 @@ class RuleEngine
             'FloatColumnForMoney' => FloatColumnForMoney::class,
         ];
 
-        foreach ($map as $key => $class) {
-            $ruleConfig = config("migration-linter.rules.$key");
+        // Load config-defined rules (allows app or custom packages)
+        $configured = config('migration-linter.rules', []);
 
-            if (is_array($ruleConfig) && ($ruleConfig['enabled'] ?? false)) {
-                $rule = app($class);
-
-                // Override severity if specified in config
-                if (isset($ruleConfig['severity'])) {
-                    $rule->customSeverity = $ruleConfig['severity'];
-                }
-                
-                $this->rules[] = $rule;
+        foreach ($configured as $key => $settings) {
+            if (!is_array($settings) || empty($settings['enabled'])) {
+                continue;
             }
+
+            // Determine class: use map, FQCN, or default package namespace
+            $class = $map[$key]
+                ?? (class_exists($key) ? $key : "App\\MigrationRules\\{$key}");
+
+            if (!class_exists($class)) {
+                continue; // skip invalid entries
+            }
+
+            /** @var \Sufyan\MigrationLinter\Rules\AbstractRule $rule */
+            $rule = app($class);
+
+            if (isset($settings['severity'])) {
+                $rule->customSeverity = $settings['severity'];
+            }
+
+            $this->rules[] = $rule;
         }
     }
+
 
 
     /**
