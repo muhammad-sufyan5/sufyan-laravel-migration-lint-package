@@ -116,9 +116,3 @@ If it finds any violations, they’ll appear in the standard lint report.
 Your custom rules will now integrate seamlessly with Laravel Migration Linter’s reporting, severity configuration, and CI workflows.
 
 ---
-
-### ✅ Why this version is better
-- Uses your real base class: `AbstractRule` instead of the outdated `BaseRule`.
-- Demonstrates `$operation` usage — consistent with your internal rule design.
-- Matches the same tone and formatting as `rules.md`.
-- Includes helpful dev tips for future contributors.

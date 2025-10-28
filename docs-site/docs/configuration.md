@@ -100,9 +100,3 @@ return [
 ✅ Pro Tip: Commit your config/migration-linter.php file to version control so your whole team shares the same linting standards.
 
 ---
-
-### 🔍 Why this version works better
-- Reflects your new **dynamic discovery system** for custom rules.  
-- Explains the `severity_threshold` clearly (many devs miss that it affects exit codes).  
-- Links to the “Writing Custom Rules” page for continuity.  
-- Perfectly matches your documentation tone and emoji style.

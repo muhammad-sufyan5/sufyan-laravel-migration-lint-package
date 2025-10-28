@@ -1,7 +1,7 @@
 ---
 id: intro
 title: Introduction
-slug: /         # 👈 this tells Docusaurus it's the homepage
+slug: /           # 👈 makes this the homepage
 sidebar_position: 1
 ---
 
@@ -12,27 +12,58 @@ sidebar_position: 1
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/blob/main/LICENSE)
 
-
-A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.
-
----
-
-## 🚀 Features
-
-✅ Detects dangerous migration operations (like adding non-nullable columns without defaults).  
-✅ Warns about missing indexes on foreign key columns.  
-✅ Warns when columns are dropped (data loss risk).  
-✅ Warns when `float()` is used for money fields (precision issue).  
-✅ Warns when adding unique constraints to existing data.  
-✅ Configurable rule severities (info, warning, error).  
-✅ Baseline support to ignore known legacy issues.  
-✅ CLI report with JSON output & colorized table.  
-✅ Ready for CI/CD integration (GitHub Actions support).
+> “Smart developers don’t debug production — they lint migrations.”
 
 ---
 
-## 📸 Screenshot
+## 💡 Overview
+
+**Laravel Migration Linter** is a lightweight developer tool that automatically scans your database migrations for **risky schema changes** before they hit production.
+
+It acts as a **static analyzer** for your migrations — preventing downtime, data loss, or broken deploys by catching unsafe patterns early in your CI/CD pipeline.
+
+---
+
+## 🚀 Key Features
+
+- 🧠 **Safety-first linting** — Detects dangerous operations like adding non-nullable columns without defaults or dropping columns.  
+- ⚡ **Performance awareness** — Warns when missing indexes or inefficient data types can impact query speed.  
+- 💾 **Data integrity checks** — Alerts when unique constraints, float columns, or type changes may corrupt data.  
+- 🧩 **Configurable rules** — Enable, disable, or adjust severity (`info`, `warning`, `error`) per project.  
+- 🧱 **Baseline support** — Ignore known legacy issues and focus only on new violations.  
+- 📊 **Developer-friendly reports** — Colorized console output, JSON export, and compact mode.  
+- 🤖 **CI/CD ready** — Integrates cleanly with GitHub Actions, GitLab, and other pipelines.
+
+---
+
+## 🧰 Why Use It
+
+Traditional Laravel migrations execute directly on production data — even small mistakes can cause downtime.  
+**Laravel Migration Linter** analyzes migrations *before* they run, letting you:
+
+- Prevent table locks and schema conflicts  
+- Detect destructive operations in pull requests  
+- Enforce safe migration practices across teams  
+- Standardize schema evolution in CI/CD workflows  
+
+---
+
+## 📸 Example Report
 
 <img src="img/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900" />
 
-<sub>Screenshot from v1.0.0</sub>
+<sub>Screenshot from v1.0.0 — showing lint warnings in console output</sub>
+
+---
+
+## 🧭 Next Steps
+
+- 📦 [Installation Guide](./installation.md) — Learn how to install and publish config  
+- 🧩 [Usage](./usage.md) — See command options and examples  
+- ⚙️ [Configuration](./configuration.md) — Customize rule severities  
+- 🧠 [Writing Custom Rules](./writing-custom-rules.md) — Create your own organization-specific checks  
+- 🤖 [CI/CD Integration](./ci-cd.md) — Enforce linting in automated pipelines  
+
+---
+
+© 2025 **Sufyan** — Released under the [MIT License](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/blob/main/LICENSE).

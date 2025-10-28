@@ -99,9 +99,3 @@ For example, setting 'severity_threshold' => 'error' will fail the command only 
 You’re ready to lint, baseline, and enforce migration safety across all environments.
 
 ---
-
-## 🧩 Why this version works better
-- Headings follow consistent hierarchy and match your other docs (`configuration`, `rules`, etc.).  
-- Table formatting is clean and readable.  
-- Adds **exit code info**, **CI example**, and **sample JSON output** — highly useful for devs integrating automation.  
-- Uses same emoji/tone style for visual consistency across your documentation set.
