@@ -3,7 +3,6 @@
 namespace Sufyan\MigrationLinter\Rules;
 
 use Sufyan\MigrationLinter\Support\Operation;
-use Sufyan\MigrationLinter\Support\Issue;
 
 class AddNonNullableColumnWithoutDefault extends AbstractRule
 {
@@ -19,41 +18,83 @@ class AddNonNullableColumnWithoutDefault extends AbstractRule
 
     public function description(): string
     {
-        return 'Warns when adding a NOT NULL column without a default value to a large table.';
+        return 'Warns when adding or altering a NOT NULL column without a default value to a table that may contain data.';
     }
 
-    public function check(Operation $operation): array
-    {
-        $issues = [];
+public function check(Operation $operation): array
+{
+    $issues = [];
 
-        // Only consider "column creation" operations
-        $addColumnTypes = ['string', 'integer', 'bigInteger', 'uuid', 'boolean', 'timestamp', 'text', 'float', 'decimal'];
+    // Only consider column creation/modification methods
+    $columnTypes = [
+        'string',
+        'integer',
+        'bigInteger',
+        'uuid',
+        'boolean',
+        'timestamp',
+        'text',
+        'float',
+        'decimal',
+    ];
 
-        if (! in_array($operation->method, $addColumnTypes, true)) {
-            return [];
-        }
+    if (! in_array($operation->method, $columnTypes, true)) {
+        return [];
+    }
 
-        $args = strtolower($operation->args);
-        $hasNullable = str_contains($args, 'nullable');
-        $hasDefault = str_contains($args, 'default(');
+    $raw  = strtolower($operation->rawCode ?? '');
+    $args = strtolower($operation->args ?? '');
 
-        // Configuration options
-        $largeTables = config('migration-linter.large_table_names', []);
-        $checkAll = config('migration-linter.check_all_tables', true);
+    // Detect default()
+    $hasDefault = str_contains($raw, 'default(') || str_contains($args, 'default(');
 
-        // Should we lint this table?
-        $shouldCheck = $checkAll || in_array($operation->table, $largeTables, true);
+    // Detect column modification
+    $isChange = str_contains($raw, '->change()');
 
-        // Apply the rule
-        if ($shouldCheck && ! $hasNullable && ! $hasDefault) {
-            $issues[] = $this->warn($operation, sprintf(
+    // --- Nullable detection (final version) ---
+    $hasExplicitFalse = str_contains($raw, '->nullable(false)') || str_contains($args, 'nullable(false)');
+    $hasExplicitTrue  = str_contains($raw, '->nullable(true)')  || str_contains($args, 'nullable(true)');
+    $hasGenericNullable = str_contains($raw, '->nullable(') || str_contains($args, 'nullable');
+
+    // Only consider it nullable if explicitly true or a generic call (no explicit false)
+    $hasNullable = (!$hasExplicitFalse) && ($hasExplicitTrue || $hasGenericNullable);
+
+    // Detect new-table creation (safe)
+    $isNewTable = preg_match('/create_.*_table\.php$/', strtolower($operation->file ?? ''))
+        || str_contains($raw, 'schema::create(');
+
+    if ($isNewTable) {
+        return [];
+    }
+
+    // Config controls
+    $largeTables = config('migration-linter.large_table_names', []);
+    $checkAll    = config('migration-linter.check_all_tables', true);
+    if ($checkAll === null) {
+        $checkAll = true;
+    }
+
+    $shouldCheck = $checkAll || in_array($operation->table, $largeTables, true);
+
+    // Apply lint rule
+    if ($shouldCheck && ! $hasNullable && ! $hasDefault) {
+        $message = $isChange
+            ? sprintf(
+                "Changing column '%s' on table '%s' to NOT NULL without default may fail on existing data.",
+                $operation->column ?: 'unknown',
+                $operation->table
+            )
+            : sprintf(
                 "Adding NOT NULL column '%s' on table '%s' without default (type: %s).",
                 $operation->column ?: 'unknown',
                 $operation->table,
                 $operation->method
-            ));
-        }
+            );
 
-        return $issues;
+        $issues[] = $this->warn($operation, $message, $operation->column);
     }
+
+    return $issues;
+}
+
 }

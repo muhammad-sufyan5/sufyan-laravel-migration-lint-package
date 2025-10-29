@@ -3,7 +3,6 @@
 namespace Sufyan\MigrationLinter\Rules;
 
 use Sufyan\MigrationLinter\Support\Operation;
-use Sufyan\MigrationLinter\Support\Issue;
 
 class MissingIndexOnForeignKey extends AbstractRule
 {
@@ -19,48 +18,80 @@ class MissingIndexOnForeignKey extends AbstractRule
 
     public function description(): string
     {
-        return 'Warns when a foreign key column is added without an index or foreign constraint.';
+        return 'Warns when a foreign key or polymorphic column is added without an index or foreign constraint.';
     }
 
     public function check(Operation $operation): array
     {
         $issues = [];
 
-        // Skip if not a column creation operation
-        $addColumnMethods = [
-            'unsignedBigInteger',
-            'unsignedInteger',
-            'bigInteger',
-            'integer',
-        ];
+        $config = config('migration-linter.rules.MissingIndexOnForeignKey', []);
 
-        if (! in_array($operation->method, $addColumnMethods, true)) {
-            return [];
-        }
+        $checkForeignId = $config['check_foreign_id_without_constrained'] ?? true;
+        $checkMorphs    = $config['check_morphs_without_index'] ?? true;
+        $checkComposite = $config['check_composite_foreign'] ?? true;
 
-        // Check for likely foreign key column (ends with _id)
-        if (! $operation->column || ! str_ends_with($operation->column, '_id')) {
-            return [];
-        }
+        // Normalize input
+        $method = strtolower($operation->method ?? '');
+        $raw    = strtolower(trim($operation->rawCode ?? ''));
+        $args   = strtolower($operation->args ?? '');
 
-        // Detect if this migration already has an index or foreign constraint
-        // by scanning the migration body (rawCode or args)
-        $hasIndexOrForeign = false;
-
-        if ($operation->rawCode) {
-            $code = strtolower($operation->rawCode);
-            if (str_contains($code, '->index(') || str_contains($code, '->foreign(')) {
-                $hasIndexOrForeign = true;
+        // ---------------------------------------------------------------------
+        // 1️⃣ foreignId / foreignIdFor without ->constrained()
+        // ---------------------------------------------------------------------
+        if (
+            $checkForeignId &&
+            in_array($method, ['foreignid', 'foreignidfor'], true)
+        ) {
+            if (! str_contains($raw, '->constrained(')) {
+                $issues[] = $this->warn(
+                    $operation,
+                    sprintf(
+                        "Column '%s' on table '%s' uses %s() but has no ->constrained(); constraint or index may be missing.",
+                        $operation->column ?? 'unknown',
+                        $operation->table,
+                        $method
+                    ),
+                    $operation->column
+                );
             }
         }
 
-        if (! $hasIndexOrForeign) {
-            $issues[] = $this->warn($operation, sprintf(
-                "Foreign key-like column '%s' on table '%s' may be missing an index or constraint.",
-                $operation->column,
-                $operation->table
-            ));
+        // ---------------------------------------------------------------------
+        // 2️⃣ morphs / nullableMorphs without ->index()
+        // ---------------------------------------------------------------------
+        if (
+            $checkMorphs &&
+            in_array($method, ['morphs', 'nullablemorphs'], true)
+        ) {
+            if (! str_contains($raw, '->index(')) {
+                $issues[] = $this->warn(
+                    $operation,
+                    sprintf(
+                        "Polymorphic relation '%s' on table '%s' has no index; consider adding ->index() for faster lookups.",
+                        $operation->column ?? 'unknown',
+                        $operation->table
+                    ),
+                    $operation->column
+                );
+            }
         }
+
+        // ---------------------------------------------------------------------
+        // 3️⃣ Composite foreign([...]) without index([...])
+        // ---------------------------------------------------------------------
+        if ($checkComposite && $method === 'foreign' && str_contains($args, '[')) {
+            if (! str_contains($raw, '->index(')) {
+                $issues[] = $this->warn(
+                    $operation,
+                    sprintf(
+                        "Composite foreign key on table '%s' may be missing a matching index on the same columns.",
+                        $operation->table
+                    )
+                );
+            }
+        }
+
 
         return $issues;
     }

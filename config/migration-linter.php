@@ -88,18 +88,25 @@ return [
         'MissingIndexOnForeignKey' => [
             'enabled' => true,
             'severity' => 'warning',
+            'check_foreign_id_without_constrained' => true,
+            'check_morphs_without_index' => true,
+            'check_composite_foreign' => true,
         ],
         'DropColumnWithoutBackup' => [
             'enabled'  => true,
             'severity' => 'warning',
+            'allow_safe_comment' => true,
         ],
         'AddUniqueConstraintOnNonEmptyColumn' => [
             'enabled'  => true,
             'severity' => 'warning',
+            'check_composite' => true,
         ],
         'FloatColumnForMoney' => [
             'enabled'  => true,
             'severity' => 'warning',
+            'check_double' => true,
+            'check_real'   => true,
         ],
 
 

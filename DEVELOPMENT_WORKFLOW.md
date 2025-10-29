@@ -312,3 +312,24 @@ Add visual and documentation enhancements to improve the professional appearance
 ### Notes
 This final step completes the MVP cycle of the Laravel Migration Linter package.  
 Future steps may include automated tests, new rules, and community engagement.
+
+
+### Testing Rules
+
+          **AddNonNullableColumnWithoutDefault**
+
+## 🧩 Rule purpose
+
+Warn when a migration adds or alters a column to be NOT NULL but without a default value,
+because this can cause data loss, downtime, or failed migrations on tables that already contain data.
+
+✅ Core logic tested in your suite
+
+| #     | Edge Case                                                  | What It Simulates                                                                         | Expected Behavior                                             | Test Name                                                              |
+| ----- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **1** | **Adding NOT NULL column without default**                 | A new column like `\$table->string('email');` on an existing table.                       | ⚠️ Warn — unsafe change on existing data.                     | `it detects non-nullable column without default`                       |
+| **2** | **Adding column with default value**                       | `\$table->string('role')->default('user')->nullable(false);`                              | ✅ Skip — safe because default will populate existing rows.    | `it skips when default value is present`                               |
+| **3** | **Adding explicitly nullable column**                      | `\$table->string('nickname')->nullable();`                                                | ✅ Skip — safe because column allows NULL.                     | `it skips when column is explicitly nullable`                          |
+| **4** | **Using nullable(false)** *(edge case, currently skipped)* | `\$table->string('username')->nullable(false);`                                           | ⚠️ Should warn (treats as NOT NULL, no default).              | `it detects when nullable(false) is used without default` *(skipped)*  |
+| **5** | **Changing existing column to NOT NULL without default**   | `\$table->string('payment_status')->nullable(false)->change();`                           | ⚠️ Warn — altering existing column may fail on existing rows. | `it detects change() operation making column NOT NULL without default` |
+| **6** | **Adding NOT NULL column during table creation**           | `Schema::create('tasks', function (...) { \$table->string('title')->nullable(false); });` | ✅ Skip — new tables are safe (no existing data).              | `it skips new table creation migrations (Schema::create)`              |

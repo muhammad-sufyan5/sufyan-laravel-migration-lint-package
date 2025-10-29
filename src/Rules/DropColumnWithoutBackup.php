@@ -19,7 +19,7 @@ class DropColumnWithoutBackup extends AbstractRule
 
     public function description(): string
     {
-        return 'Warns when columns are dropped without confirmation or backup.';
+        return 'Warns when one or more columns are dropped without explicit confirmation or backup.';
     }
 
     /**
@@ -27,29 +27,52 @@ class DropColumnWithoutBackup extends AbstractRule
      */
     public function check(Operation $operation): array
     {
-        if ($operation->method !== 'dropColumn') {
+        if (strtolower($operation->method) !== 'dropcolumn') {
             return [];
         }
 
         $issues  = [];
         $columns = [];
 
-        // Extract column names from args like "['email', 'nickname']" or "'email'"
-        if (preg_match_all("/'([^']+)'/", $operation->args ?? '', $m)) {
+        $rawCode = strtolower($operation->rawCode ?? '');
+        $args    = strtolower($operation->args ?? '');
+
+        // ---------------------------------------------------------------------
+        // 1️⃣ Allow developer opt-out via safe comment
+        // ---------------------------------------------------------------------
+        if (str_contains($rawCode, '// safe drop') || str_contains($rawCode, '/* safe-drop')) {
+            return [];
+        }
+
+        // ---------------------------------------------------------------------
+        // 2️⃣ Extract dropped column names (single or multiple)
+        // ---------------------------------------------------------------------
+        if (preg_match_all("/'([^']+)'/", $args, $m)) {
             $columns = $m[1];
         }
 
-        // Column-specific warnings
-        foreach ($columns as $col) {
-            $issues[] = $this->warn(
-                $operation,
-                "Dropping column '{$col}' from table '{$operation->table}' may result in data loss.",
-                $col
-            );
-        }
-
-        // Generic warning if no specific column detected
-        if (empty($columns)) {
+        // ---------------------------------------------------------------------
+        // 3️⃣ Generate issues
+        // ---------------------------------------------------------------------
+        if (! empty($columns)) {
+            // Multiple columns
+            if (count($columns) > 1) {
+                $colList = implode("', '", $columns);
+                $issues[] = $this->warn(
+                    $operation,
+                    "Dropping multiple columns ('{$colList}') from table '{$operation->table}' may result in data loss."
+                );
+            } else {
+                // Single column
+                $col = $columns[0];
+                $issues[] = $this->warn(
+                    $operation,
+                    "Dropping column '{$col}' from table '{$operation->table}' may result in data loss.",
+                    $col
+                );
+            }
+        } else {
+            // Generic warning if no column detected
             $issues[] = $this->warn(
                 $operation,
                 "Dropping one or more columns from '{$operation->table}' may result in data loss."
