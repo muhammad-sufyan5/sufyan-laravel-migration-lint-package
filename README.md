@@ -7,6 +7,9 @@
 [![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
+[![Laravel Version](https://img.shields.io/badge/Laravel-10%2B-orange?style=flat-square)](#)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-v1.2.0-green?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
@@ -14,15 +17,19 @@ A lightweight Laravel package that **analyzes your database migrations** and war
 ---
 
 ## 🚀 Features
-✅ Detects dangerous migration operations (like adding non-nullable columns without defaults).  
-✅ Warns about missing indexes on foreign key columns.  
-✅ Warns when columns are dropped (data loss risk).  
-✅ Warns when float() is used for money fields (precision issue).  
-✅ Warns when adding unique constraints to existing data.   
-✅ Configurable rule severities (info, warning, error).  
-✅ Baseline support to ignore known legacy issues.  
-✅ CLI report with JSON output & colorized table.  
-✅ Ready for CI/CD integration (GitHub Actions support).  
+- 🔍 Detects dangerous migration patterns:
+  - Non-nullable columns without defaults  
+  - Missing indexes on foreign keys  
+  - Unsafe column drops  
+  - Risky unique constraints  
+  - Floating-point money fields
+- ⚙️ Configurable rule severities (`info`, `warning`, `error`)
+- 🧠 Baseline support to ignore legacy issues
+- 🧾 JSON or table output for CI/CD
+- 🧩 Fully documented & tested (v1.2.0)
+
+📘 **Read full rule docs:**  
+👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
 
 ---
 
@@ -41,41 +48,28 @@ Run the built-in Artisan command to lint all migration files:
 ```bash
 php artisan migrate:lint
 ```
-### You can use the following flags and options to customize behavior:
+Common options:
 
-| Option / Flag         | Description                                                                                                                                                                        |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--generate-baseline` | Create a JSON file (`migration-linter-baseline.json`) that records all current issues so they can be ignored in future runs. Useful for introducing the linter to legacy projects. |
-| `--path=`             | Lint a specific migration file or directory instead of the default `database/migrations` folder.                                                                                   |
-| `--json`              | Output results in structured JSON format (great for CI/CD pipelines).                                                                                                              |
-| `--baseline=`         | Provide a custom path to a baseline file for ignoring known issues (overrides the default `migration-linter-baseline.json`).                                                       |
+| Option                | Description                                |
+| --------------------- | ------------------------------------------ |
+| `--json`              | Output structured JSON (great for CI)      |
+| `--path=`             | Lint a specific migration file/folder      |
+| `--baseline`          | Use a custom baseline file                 |
+| `--generate-baseline` | Create a baseline to ignore current issues |
+                                                    |
 
 
 Example Usage
 
 ### Lint all migrations
 ```bash
-php artisan migrate:lint
+php artisan migrate:lint --json > storage/lint-report.json
 ```
 ### Generate a new baseline file (ignore current issues)
 ```bash
-php artisan migrate:lint --generate-baseline
-```
-### Run only on a specific path
-```bash
-php artisan migrate:lint --path=database/migrations
-```
-### Export lint report as JSON (for CI)
-```bash
-php artisan migrate:lint --json > storage/lint-report.json
-```
-### Use a custom baseline file
-```bash
-php artisan migrate:lint --baseline=storage/custom-baseline.json
-```
-### Improving usability for smaller terminal sizes
-```bash
-php artisan migrate:lint --compact
+[warning] AddUniqueConstraintOnNonEmptyColumn
+→ Adding unique constraint to 'email' may fail if duplicates exist in 'users'.
+
 ```
 
 ## ⚙️ Publishing Configuration
@@ -85,30 +79,20 @@ You can publish the configuration file to customize rule settings:
 ```bash
 php artisan vendor:publish --tag="migration-linter-config"
 ```
-This creates:
-config/migration-linter.php
+`config/migration-linter.php`:
 
-## ⚙️ Configuration
-
-Default config file (config/migration-linter.php):
 ```bash
 return [
     'severity_threshold' => 'warning',
-
     'rules' => [
-        'AddNonNullableColumnWithoutDefault' => [
-            'enabled'  => true,
-            'severity' => 'warning',
-        ],
-        'MissingIndexOnForeignKey' => [
-            'enabled'  => true,
-            'severity' => 'warning',
-        ],
+        'AddNonNullableColumnWithoutDefault' => ['enabled' => true, 'severity' => 'warning'],
+        'MissingIndexOnForeignKey'           => ['enabled' => true, 'severity' => 'warning'],
+        // ...
     ],
 ];
+
 ```
-## 🧰 GitHub Actions Integration
-Add this workflow file: .github/workflows/migration-linter.yml
+## 🧾 CI/CD Integration (GitHub Actions)
 ```bash
 name: Laravel Migration Linter
 on: [push, pull_request]
@@ -123,6 +107,16 @@ jobs:
       - run: php artisan migrate:lint --json > lint-report.json
 
 ```
+---
+
+## 💡What’s New in v1.2.0
+
+- Composite & inline unique constraint detection
+- `foreignId()->constrained()` & `morphs()` index checks
+- Multi-column drop detection with `// safe drop` support
+- `double()` /` real()` money column detection
+- More expressive warnings & test coverage
+
 ---
 
 ## 🧑‍💻 Contributing
