@@ -9,6 +9,22 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## 🚀 [1.0.0] — 2025-10-15
+
+### 🆕 Added
+- **Core Artisan command:**
+  ```bash
+  php artisan migrate:lint
+  ```
+Base rules:
+- AddNonNullableColumnWithoutDefault
+  - MissingIndexOnForeignKey
+  - Config publishing (php artisan vendor:publish --tag="migration-linter-config")
+- Baseline file support (--generate-baseline, --baseline=path)
+- JSON output mode (--json)
+- Compact report output for smaller terminals.
+---
+
 ## 🧩 [1.1.0] — 2025-10-21
 
 ### 🆕 Added
@@ -24,22 +40,14 @@ This project follows [Semantic Versioning](https://semver.org/).
 - Added rule discovery improvements in `RuleEngine`.  
 - Documentation updates (`rules.md`, `writing-custom-rules.md`, and `configuration.md`).
 
----
-
-## 🚀 [1.0.0] — 2025-10-15
-
-### 🆕 Added
-- **Core Artisan command:**
-  ```bash
-  php artisan migrate:lint
-  ```
-Base rules:
+### New Rules
+Initial public release with baseline rule set:
 - AddNonNullableColumnWithoutDefault
-  - MissingIndexOnForeignKey
-  - Config publishing (php artisan vendor:publish --tag="migration-linter-config")
-- Baseline file support (--generate-baseline, --baseline=path)
-- JSON output mode (--json)
-- Compact report output for smaller terminals.
+- MissingIndexOnForeignKey
+- DropColumnWithoutBackup
+- AddUniqueConstraintOnNonEmptyColumn
+- FloatColumnForMoney
+
 ---
 
 ## [v1.2.0] — 2025-10-30
@@ -77,15 +85,6 @@ Base rules:
 
 ---
 
-## [v1.1.0] — 2025-09-15
-Initial public release with baseline rule set:
-- AddNonNullableColumnWithoutDefault
-- MissingIndexOnForeignKey
-- DropColumnWithoutBackup
-- AddUniqueConstraintOnNonEmptyColumn
-- FloatColumnForMoney
-
----
 
 🧠 Tip: You can always check your installed version via Composer:
 ```bash
