@@ -42,6 +42,51 @@ Base rules:
 - Compact report output for smaller terminals.
 ---
 
+## [v1.2.0] — 2025-10-30
+
+### ✨ Added
+- **AddNonNullableColumnWithoutDefault**
+  - Detects `.change()` on existing columns.
+  - Skips `Schema::create()` (safe for new tables).
+- **MissingIndexOnForeignKey**
+  - Detects `foreignId()` without `->constrained()`.
+  - Detects `morphs()` / `nullableMorphs()` without `->index()`.
+  - Detects composite `foreign([...])` without matching `index([...])`.
+- **DropColumnWithoutBackup**
+  - Detects multiple column drops.
+  - Supports safe comment whitelist (`// safe drop` or `/* safe-drop */`).
+- **AddUniqueConstraintOnNonEmptyColumn**
+  - Detects composite unique constraints.
+  - Detects inline `->unique()` and `->unique()->change()`.
+  - Configurable `check_composite` flag.
+- **FloatColumnForMoney**
+  - Detects `float()`, `double()`, and `real()` for money-like columns.
+  - Smarter pattern matching (price, amount, total, tax, etc.).
+  - Configurable toggles: `check_double` and `check_real`.
+
+### 🧰 Improved
+- Unified severity handling via config.
+- More informative lint messages for each rule.
+- Added full Pest test coverage for all five rules.
+- Enhanced documentation and configuration examples.
+
+### 🐛 Fixed
+- Config overrides now correctly respect `enabled = false`.
+- RuleEngine dynamically skips disabled rules during lint runs.
+- Reporter tests aligned with real Laravel OutputStyle.
+
+---
+
+## [v1.1.0] — 2025-09-15
+Initial public release with baseline rule set:
+- AddNonNullableColumnWithoutDefault
+- MissingIndexOnForeignKey
+- DropColumnWithoutBackup
+- AddUniqueConstraintOnNonEmptyColumn
+- FloatColumnForMoney
+
+---
+
 🧠 Tip: You can always check your installed version via Composer:
 ```bash
 composer show sufyandev/laravel-migration-linter
