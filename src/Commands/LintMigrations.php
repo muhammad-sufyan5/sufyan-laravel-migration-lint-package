@@ -46,7 +46,7 @@ class LintMigrations extends Command
         $issues = $engine->run($operations);
 
         // ✅ Baseline Support
-        $baselinePath = base_path('migration-linter-baseline.json');
+        $baselinePath = $this->option('baseline') ?: base_path('migration-linter-baseline.json');
         $baseline = [];
 
         if (file_exists($baselinePath)) {
