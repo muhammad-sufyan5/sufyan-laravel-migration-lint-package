@@ -22,6 +22,8 @@ You can customize the linting behavior using the following flags and options:
 | `--json`              | Output results in structured JSON format (ideal for CI/CD or automation).                                                                                                                       |
 | `--baseline=`         | Provide a custom path to a baseline file (overrides the default baseline file).                                                                                                                 |
 | `--compact`           | Display a shorter, condensed table layout for smaller terminals or narrow CI logs.                                                                                                              |
+| `--rules`           | View all rules and their enabled statuses.
+                                                                                                           |
 
 ---
 
@@ -67,6 +69,27 @@ Example output (simplified):
 ```bash
 php artisan migrate:lint --baseline=storage/custom-baseline.json
 ```
+---
+
+### 🗂 List all rules with their enabled statuses
+```bash
+php artisan migrate:lint --rules
+```
+Example output:
+```bash
+📋 Available Migration Linter Rules
+
++--------------------------------------------+----------+---------------------------------------------------------------+
+| Rule ID                                   | Enabled  | Description                                                   |
++--------------------------------------------+----------+---------------------------------------------------------------+
+| AddNonNullableColumnWithoutDefault        | Yes   | Warns when adding a NOT NULL column without a default value.  |
+| MissingIndexOnForeignKey                  | No    | Detects missing indexes on foreign key columns.               |
+| DropColumnWithoutBackup                   | Yes   | Warns when columns are dropped without backup.                |
+| AddUniqueConstraintOnNonEmptyColumn       | No    | Warns when adding unique constraints on existing data.        |
+| FloatColumnForMoney                       | Yes   | Warns when float() used for monetary values.                  |
++--------------------------------------------+----------+---------------------------------------------------------------+
+```
+
 ---
 
 ### 🖥 Compact mode for smaller terminals

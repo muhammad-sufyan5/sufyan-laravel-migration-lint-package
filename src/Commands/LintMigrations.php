@@ -18,7 +18,8 @@ class LintMigrations extends Command
                             {--compact : Display simplified text-based output for small terminals}
                             {--path= : Path to a specific migration file or folder}
                             {--json : Output results in JSON format}
-                            {--baseline= : Path to baseline file for ignoring known issues}';
+                            {--baseline= : Path to baseline file for ignoring known issues}
+                            {--rules : Display available rules and exit}';
 
     /**
      * The console command description.
@@ -30,6 +31,11 @@ class LintMigrations extends Command
      */
     public function handle(): int
     {
+        // ✅ Handle --rules flag
+        if ($this->option('rules')) {
+            return $this->listRules();
+        }
+
         $this->info('🔍 Running Laravel Migration Linter...');
 
         $path = $this->option('path') ?: base_path('database/migrations');
@@ -45,7 +51,7 @@ class LintMigrations extends Command
         $engine = new RuleEngine();
         $issues = $engine->run($operations);
 
-        // ✅ Baseline Support
+        // Baseline Support
         $baselinePath = base_path('migration-linter-baseline.json');
         $baseline = [];
 
@@ -67,24 +73,56 @@ class LintMigrations extends Command
             return true;
         });
 
-        // ✅ Generate Baseline if requested
+        // Generate Baseline if requested
         if ($this->option('generate-baseline')) {
             file_put_contents($baselinePath, json_encode(array_values($issues), JSON_PRETTY_PRINT));
-            $this->info("✅ Baseline file generated at: {$baselinePath}");
+            $this->info("Baseline file generated at: {$baselinePath}");
             return self::SUCCESS;
         }
 
-        // ✅ Show clean output if all ignored
+        // Show clean output if all ignored
         if (empty($issues)) {
             $this->info("✨ All issues ignored or none found. (Clean after baseline)");
             return self::SUCCESS;
         }
 
-        // ✅ Render final report
+        // Render final report
         $reporter = new Reporter($this->output);
         $reporter->render($issues, (bool) $this->option('json'));
 
         $threshold = config('migration-linter.severity_threshold', 'warning');
         return $reporter->exitCode($issues, $threshold);
+    }
+
+    protected function listRules(): int
+    {
+        $this->info('📋 Available Migration Linter Rules');
+        $this->newLine();
+
+        $rules = config('migration-linter.rules', []);
+
+        $rows = [];
+
+        foreach ($rules as $ruleId => $settings) {
+            $enabled = $settings['enabled'] ? 'Yes' : 'No';
+
+            $description = '—';
+            $className = "Sufyan\\MigrationLinter\\Rules\\{$ruleId}";
+            if (class_exists($className)) {
+                $ruleInstance = new $className();
+                if (method_exists($ruleInstance, 'description')) {
+                    $description = $ruleInstance->description();
+                }
+            }
+
+            $rows[] = [
+                $ruleId,
+                $enabled,
+                $description,
+            ];
+        }
+
+        $this->table(['Rule ID', 'Enabled', 'Description'], $rows);
+        return self::SUCCESS;
     }
 }
