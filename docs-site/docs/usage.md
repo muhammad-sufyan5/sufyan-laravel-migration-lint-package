@@ -22,8 +22,8 @@ You can customize the linting behavior using the following flags and options:
 | `--json`              | Output results in structured JSON format (ideal for CI/CD or automation).                                                                                                                       |
 | `--baseline=`         | Provide a custom path to a baseline file (overrides the default baseline file).                                                                                                                 |
 | `--compact`           | Display a shorter, condensed table layout for smaller terminals or narrow CI logs.                                                                                                              |
-| `--rules`           | View all rules and their enabled statuses.
-                                                                                                           |
+| `--rules`           | View all rules and their enabled statuses.                                                |
+| `--summary`           | Display summary footer in output.                                              |
 
 ---
 
@@ -88,6 +88,27 @@ Example output:
 | AddUniqueConstraintOnNonEmptyColumn       | No    | Warns when adding unique constraints on existing data.        |
 | FloatColumnForMoney                       | Yes   | Warns when float() used for monetary values.                  |
 +--------------------------------------------+----------+---------------------------------------------------------------+
+```
+
+---
+
+### 🗂 Display Summary in output
+```bash
+php artisan migrate:lint --summary
+```
+Example output:
+```bash
+� Summary
+───────────────────────────────────
+� Total Files Scanned:     6
+� Issues Found:            15
+⚠️  Warnings:              15
+❌ Errors:                 0
+� Info:                    0
+
+
+ [WARNING] ⚠️  Some migrations contain potential risks.
+
 ```
 
 ---
