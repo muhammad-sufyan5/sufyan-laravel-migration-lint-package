@@ -21,7 +21,7 @@ class Reporter
      * @param  bool  $compact
      * @return void
      */
-    public function render(array $issues, bool $json = false, bool $compact = false): void
+    public function render(array $issues, bool $json = false, bool $compact = false, bool $showSummary  = false): void
     {
         if ($json) {
             $this->renderJson($issues);
@@ -41,13 +41,13 @@ class Reporter
             return;
         }
 
-        $this->renderTable($issues);
+        $this->renderTable($issues, $showSummary);
     }
 
     /**
      * Render as formatted table with truncation for small terminals.
      */
-    protected function renderTable(array $issues): void
+    protected function renderTable(array $issues, bool $showSummary = false): void
     {
         $this->output->writeln("\n<options=bold>⚠️  Lint Report</>");
 
@@ -79,8 +79,33 @@ class Reporter
         $table->setRows($rows);
         $table->render();
 
-        $this->output->newLine();
-        $this->output->writeln("<comment>Found " . count($issues) . " issue(s)</comment>");
+        // 🧾 Summary Section
+        if ($showSummary) {
+            $this->output->newLine();
+            $this->output->writeln('<options=bold>📊 Summary</>');
+            $this->output->writeln(str_repeat('─', 35));
+
+            $totalFiles = count(array_unique(array_map(fn($i) => $i->file, $issues)));
+            $totalIssues = count($issues);
+            $warnings = count(array_filter($issues, fn($i) => $i->severity === 'warning'));
+            $errors = count(array_filter($issues, fn($i) => $i->severity === 'error'));
+            $infos = count(array_filter($issues, fn($i) => $i->severity === 'info'));
+
+            $this->output->writeln("🧩 Total Files Scanned:     <info>{$totalFiles}</info>");
+            $this->output->writeln("🔍 Issues Found:            <comment>{$totalIssues}</comment>");
+            $this->output->writeln("⚠️  Warnings:               <comment>{$warnings}</comment>");
+            $this->output->writeln("❌ Errors:                  <error>{$errors}</error>");
+            $this->output->writeln("💡 Info:                    <fg=cyan>{$infos}</>");
+            $this->output->newLine();
+
+            if ($errors > 0) {
+                $this->output->error('❗ Some migrations may be unsafe. Please review before deploying.');
+            } elseif ($warnings > 0) {
+                $this->output->warning('⚠️  Some migrations contain potential risks.');
+            } else {
+                $this->output->success('✅ All migrations look safe!');
+            }
+        }
     }
 
     /**

@@ -19,7 +19,8 @@ class LintMigrations extends Command
                             {--path= : Path to a specific migration file or folder}
                             {--json : Output results in JSON format}
                             {--baseline= : Path to baseline file for ignoring known issues}
-                            {--rules : Display available rules and exit}';
+                            {--rules : Display available rules and exit}
+                            {--summary : Display summary footer in output}';
 
     /**
      * The console command description.
@@ -88,8 +89,12 @@ class LintMigrations extends Command
 
         // Render final report
         $reporter = new Reporter($this->output);
-        $reporter->render($issues, (bool) $this->option('json'));
-
+        $reporter->render(
+            $issues,
+            (bool) $this->option('json'),
+            false, // compact
+            (bool) $this->option('summary') // show summary footer
+        );
         $threshold = config('migration-linter.severity_threshold', 'warning');
         return $reporter->exitCode($issues, $threshold);
     }

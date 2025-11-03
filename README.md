@@ -57,6 +57,7 @@ Common options:
 | `--baseline`          | Use a custom baseline file                 |
 | `--generate-baseline` | Create a baseline to ignore current issues |
 | `--rules`             | View all rules and their enabled status    |
+| `--summary`           | Display summary footer in output           |
 
 Example Usage
 
