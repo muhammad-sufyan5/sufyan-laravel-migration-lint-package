@@ -1,6 +1,4 @@
-<p>
-  <img src="assets/preview.png" alt="Laravel Migration Linter report" width="900">
-</p>
+![Laravel Migration Linter report](assets/preview.png)
 
 # 🧩 Laravel Migration Linter  
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen?style=flat-square)](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
