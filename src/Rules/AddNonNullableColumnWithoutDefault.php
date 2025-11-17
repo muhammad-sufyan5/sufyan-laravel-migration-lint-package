@@ -91,7 +91,22 @@ public function check(Operation $operation): array
                 $operation->method
             );
 
-        $issues[] = $this->warn($operation, $message, $operation->column);
+        $suggestion = "Option 1: Add a default value:\n"
+            . "  \$table->{$operation->method}('{$operation->column}')->default('...')->nullable(false);\n\n"
+            . "Option 2: Make it nullable, then alter:\n"
+            . "  \$table->{$operation->method}('{$operation->column}')->nullable();\n"
+            . "  DB::table('{$operation->table}')->update(['{$operation->column}' => '...']);\n"
+            . "  \$table->{$operation->method}('{$operation->column}')->nullable(false)->change();";
+
+        $docsUrl = 'https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-addnonnullablecolumnwithoutdefault';
+
+        $issues[] = $this->warn(
+            $operation,
+            $message,
+            $operation->column,
+            $suggestion,
+            $docsUrl
+        );
     }
 
     return $issues;

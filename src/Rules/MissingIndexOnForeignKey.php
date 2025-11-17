@@ -44,6 +44,9 @@ class MissingIndexOnForeignKey extends AbstractRule
             in_array($method, ['foreignid', 'foreignidfor'], true)
         ) {
             if (! str_contains($raw, '->constrained(')) {
+                $suggestion = "Add ->constrained() to your foreign key definition:\n"
+                    . "  \$table->foreignId('{$operation->column}')->constrained();";
+
                 $issues[] = $this->warn(
                     $operation,
                     sprintf(
@@ -52,7 +55,9 @@ class MissingIndexOnForeignKey extends AbstractRule
                         $operation->table,
                         $method
                     ),
-                    $operation->column
+                    $operation->column,
+                    $suggestion,
+                    'https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-missingindexonforeignkey'
                 );
             }
         }
@@ -65,6 +70,9 @@ class MissingIndexOnForeignKey extends AbstractRule
             in_array($method, ['morphs', 'nullablemorphs'], true)
         ) {
             if (! str_contains($raw, '->index(')) {
+                $suggestion = "Add ->index() to your polymorphic relation for better query performance:\n"
+                    . "  \$table->morphs('{$operation->column}')->index();";
+
                 $issues[] = $this->warn(
                     $operation,
                     sprintf(
@@ -72,7 +80,9 @@ class MissingIndexOnForeignKey extends AbstractRule
                         $operation->column ?? 'unknown',
                         $operation->table
                     ),
-                    $operation->column
+                    $operation->column,
+                    $suggestion,
+                    'https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-missingindexonforeignkey'
                 );
             }
         }

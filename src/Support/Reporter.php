@@ -79,6 +79,20 @@ class Reporter
         $table->setRows($rows);
         $table->render();
 
+        // Display suggestions for each issue
+        $this->output->newLine();
+        foreach ($issues as $index => $issue) {
+            if ($issue->suggestion) {
+                $suggestionNum = $index + 1;
+                $this->output->writeln("<fg=cyan>[Suggestion #{$suggestionNum}]</> {$issue->ruleId}:");
+                $this->output->writeln("  {$issue->suggestion}");
+                if ($issue->docsUrl) {
+                    $this->output->writeln("  📖 Learn more: {$issue->docsUrl}");
+                }
+                $this->output->newLine();
+            }
+        }
+
         // 🧾 Summary Section
         if ($showSummary) {
             $this->output->newLine();
@@ -143,6 +157,8 @@ class Reporter
             'message' => $issue->message,
             'file' => $issue->file,
             'line' => $issue->line ?? null,
+            'suggestion' => $issue->suggestion,
+            'docs_url' => $issue->docsUrl,
         ], $issues);
 
         $this->output->writeln(json_encode($jsonData, JSON_PRETTY_PRINT));
