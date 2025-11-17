@@ -44,13 +44,15 @@ The package will auto-register via Laravel’s package discovery.
 
 ---
 
-🧩 Usage
+## 🧩 Usage
+
 Run the built-in Artisan command to lint all migration files:
 
 ```bash
 php artisan migrate:lint
 ```
-Common options:
+
+### Common Options
 
 | Option                | Description                                |
 | --------------------- | ------------------------------------------ |
@@ -61,17 +63,22 @@ Common options:
 | `--rules`             | View all rules and their enabled status    |
 | `--summary`           | Display summary footer in output           |
 
-Example Usage
+### Example Usage
 
-### Lint all migrations
+Lint all migrations and export JSON:
 ```bash
 php artisan migrate:lint --json > storage/lint-report.json
 ```
-### Generate a new baseline file (ignore current issues)
+
+Generate a new baseline file (ignore current issues):
 ```bash
+php artisan migrate:lint --generate-baseline
+```
+
+Sample warning output:
+```
 [warning] AddUniqueConstraintOnNonEmptyColumn
 → Adding unique constraint to 'email' may fail if duplicates exist in 'users'.
-
 ```
 
 ---
@@ -91,29 +98,37 @@ php artisan migrate:lint --json > storage/lint-report.json
 ⚠️ Data seeding operations  
 
 **Reason:** The linter focuses on statically analyzing schema builder patterns, which represent 99% of migration files. Raw SQL analysis requires different tooling.
-
 ---
+
+## ⚙️ Configuration
 
 You can publish the configuration file to customize rule settings:
 
 ```bash
 php artisan vendor:publish --tag="migration-linter-config"
 ```
-`config/migration-linter.php`:
 
-```bash
+The config file (`config/migration-linter.php`) allows you to:
+- Set severity threshold (`info`, `warning`, `error`)
+- Enable/disable specific rules
+- Customize rule severity levels
+
+Example configuration:
+```php
 return [
     'severity_threshold' => 'warning',
     'rules' => [
         'AddNonNullableColumnWithoutDefault' => ['enabled' => true, 'severity' => 'warning'],
         'MissingIndexOnForeignKey'           => ['enabled' => true, 'severity' => 'warning'],
-        // ...
+        // ... other rules
     ],
 ];
-
 ```
+---
+
 ## 🧾 CI/CD Integration (GitHub Actions)
-```bash
+
+```yaml
 name: Laravel Migration Linter
 on: [push, pull_request]
 jobs:
@@ -122,20 +137,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
-        with: { php-version: 8.3 }
+        with:
+          php-version: 8.3
       - run: composer install --no-interaction
       - run: php artisan migrate:lint --json > lint-report.json
-
 ```
 ---
 
-## 💡What’s New in v1.2.0
+## � What's New in v1.4.0
 
-- Composite & inline unique constraint detection
-- `foreignId()->constrained()` & `morphs()` index checks
-- Multi-column drop detection with `// safe drop` support
-- `double()` /` real()` money column detection
-- More expressive warnings & test coverage
+- ✨ **Suggestions System** — Each warning includes actionable fix recommendations
+- 🔗 **Documentation Links** — Every issue links to detailed docs for the rule
+- ✅ **SoftDeletesOnProduction** — New rule for detecting unsafe soft deletes on large tables
+- 📊 **Enhanced Reporter** — JSON and table output include suggestions
+- ✅ 100% test coverage with 43 passing tests
 
 ---
 
