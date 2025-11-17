@@ -59,6 +59,15 @@ jobs:
 | 0001_01_01_000000_create_users.php  | AddNonNullableColumnWithoutDefault        | email     | warning  | Adding NOT NULL column without default value.           |
 | 2025_10_15_000000_create_orders.php | FloatColumnForMoney                       | price     | warning  | Using float() for price — use decimal(10,2) instead.     |
 +-------------------------------------+-------------------------------------------+-----------+----------+----------------------------------------------------------+
+
+[Suggestion #1] AddNonNullableColumnWithoutDefault:
+  Option 1: Add a default value to the column (e.g., ->default('value'))
+  Option 2: Make it nullable with ->nullable(), backfill existing rows, then alter
+  📖 Learn more: https://docs.example.com/rules#AddNonNullableColumnWithoutDefault
+
+[Suggestion #2] FloatColumnForMoney:
+  Use decimal(10,2) or decimal(19,4) for precise monetary calculations
+  📖 Learn more: https://docs.example.com/rules#FloatColumnForMoney
 ```
 ## 📊 Exit Codes and Build Behavior
 
@@ -82,7 +91,8 @@ When set to 'error', only error-level issues cause your CI pipeline to fail.
 - This prevents known legacy issues from reappearing in reports.
 - 🧩 Use --json output to generate structured reports for custom dashboards.
 - You can also upload the JSON artifact for analysis.
-- 🚦 Fail fast: set 'severity_threshold' => 'error' in config to stop deployments on risky migrations.
+- � **Suggestions are included** in both CLI and JSON output — use them to guide developers on fixes.
+- �🚦 Fail fast: set 'severity_threshold' => 'error' in config to stop deployments on risky migrations.
 - 🔁 Run on every PR — this ensures every migration is linted before merge.
 
 ---

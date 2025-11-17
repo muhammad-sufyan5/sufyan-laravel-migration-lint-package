@@ -86,6 +86,43 @@ Initial public release with baseline rule set:
 ---
 
 
+---
+
+## 🎯 [1.4.0] — 2025-11-15
+
+### ✨ Added (Phase 3: UX Improvements)
+- **Actionable Suggestions** — Every issue now includes `suggestion` field with fix recommendations
+  - Suggestions appear in CLI output after the lint table with `[Suggestion #N]` headers
+  - Suggestions included in JSON output as `suggestion` field for tool integration
+  - Each suggestion provides clear, actionable next steps
+- **Documentation Links** — Issues now include optional `docsUrl` field
+  - Links appear in CLI with 📖 icon and full URL
+  - JSON output includes `docs_url` field for programmatic access
+  - All built-in rules updated with relevant documentation links
+- **Enhanced AbstractRule.warn()** — Signature extended to accept `$suggestion` and `$docsUrl` parameters
+  - Fully backward compatible (optional parameters)
+  - Enables custom rule authors to provide rich feedback
+
+### 🧰 Improved
+- **Reporter System**: Enhanced `renderTable()` and `renderJson()` to display/include suggestions
+- **Built-in Rules Updated**: AddNonNullableColumnWithoutDefault and MissingIndexOnForeignKey now include actionable suggestions
+- **Documentation**: Updated usage.md with "Understanding Suggestions" section
+- **Developer Experience**: Custom rule authors can now provide suggestions via `warn()` method
+
+### 📊 Example Output
+```bash
+[Suggestion #1] AddNonNullableColumnWithoutDefault:
+  Option 1: Add a default value to the column (e.g., ->default('value'))
+  Option 2: Make it nullable with ->nullable(), backfill existing rows, then alter
+  📖 Learn more: https://docs.example.com/rules#AddNonNullableColumnWithoutDefault
+```
+
+### 🧪 Testing
+- Baseline generation test fixed (filename alignment: migration-linter-baseline.json)
+- Changes fully backward compatible with v1.3.x
+
+---
+
 🧠 Tip: You can always check your installed version via Composer:
 ```bash
 composer show sufyandev/laravel-migration-linter

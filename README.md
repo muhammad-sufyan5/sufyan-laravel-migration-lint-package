@@ -9,7 +9,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Laravel Version](https://img.shields.io/badge/Laravel-10%2B-orange?style=flat-square)](#)
 [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-v1.2.0-green?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-v1.4.0-green?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
@@ -24,9 +24,11 @@ A lightweight Laravel package that **analyzes your database migrations** and war
   - Risky unique constraints  
   - Floating-point money fields
 - ⚙️ Configurable rule severities (`info`, `warning`, `error`)
+- 💡 **Actionable suggestions** — Each warning includes fix recommendations
+- 🔗 **Documentation links** — Every suggestion has a link to detailed docs
 - 🧠 Baseline support to ignore legacy issues
-- 🧾 JSON or table output for CI/CD
-- 🧩 Fully documented & tested (v1.2.0)
+- 🧾 JSON or table output for CI/CD (with suggestions included)
+- 🧩 Fully documented & tested (v1.4.0)
 
 📘 **Read full rule docs:**  
 👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)

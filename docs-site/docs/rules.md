@@ -8,6 +8,9 @@ Each rule can be enabled, disabled, or adjusted for severity in `config/migratio
 Laravel Migration Linter analyzes your migration files and flags potential schema risks.
 Below are the built-in linting rules, each with `rationale`, `triggers`, and `configuration` examples.
 
+💡 **Note:** Each rule now includes **actionable suggestions** and documentation links in its output.
+When the linter detects an issue, it provides specific steps to fix it and links to relevant docs.
+
 ---
 
 ### ⚙️ Severity Levels
