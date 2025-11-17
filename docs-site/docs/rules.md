@@ -29,6 +29,7 @@ When the linter detects an issue, it provides specific steps to fix it and links
 - [DropColumnWithoutBackup](#-dropcolumnwithoutbackup)
 - [AddUniqueConstraintOnNonEmptyColumn](#-adduniqueconstraintonnonemptycolumn)
 - [FloatColumnForMoney](#-floatcolumnformoney)
+- [SoftDeletesOnProduction](#-softdeletesonproduction)
 
 ---
 
@@ -405,3 +406,125 @@ $table->money('price'); // wraps decimal(10, 2)
 - Avoid floating-point math in any table representing financial accuracy or audits.
 
 ---
+
+## 🧩 SoftDeletesOnProduction
+
+**Category:** Performance / Data Management  
+**Default severity:** `warning`
+
+---
+
+### 🔍 What it checks
+Warns when soft deletes (`->softDeletes()`) are added to **large tables**, which can impact query performance and complexity.
+
+Soft-deleted records remain in the database and must be excluded from queries, adding extra `WHERE deleted_at IS NULL` conditions. On large tables, this can:
+- Slow down queries significantly
+- Create index bloat
+- Complicate reporting and analytics
+- Increase backup sizes
+
+The rule checks tables listed in `large_table_names` config by default.
+
+---
+
+### 💣 Why it matters
+- Large tables with millions of rows + soft deletes = slower queries
+- Each query must filter `deleted_at IS NULL`, stressing indexes
+- Soft-deleted records accumulate in production databases over time
+- Analytics queries become complex with deletion logic
+- Backups grow unnecessarily large
+
+---
+
+### ⚠️ Triggers
+```php
+// 🚫 Soft deletes on large tables (users, orders, invoices by default)
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('email');
+    $table->softDeletes();  // ⚠️ Triggers on 'users' table
+});
+
+Schema::create('orders', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id');
+    $table->softDeletes();  // ⚠️ Triggers on 'orders' table
+});
+
+// ✅ Soft deletes on small tables (ignored by default)
+Schema::create('tags', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->softDeletes();  // OK - 'tags' is not in large_table_names
+});
+```
+
+✅ Better alternatives
+```php
+// Option 1: Archive to separate table instead
+Schema::create('users_archive', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('original_id');
+    $table->json('archived_data');
+    $table->timestamp('archived_at')->useCurrent();
+});
+
+// Option 2: Use hard deletes with backups
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('email');
+    // Rely on backups instead of soft deletes
+});
+
+// Option 3: If soft deletes required, add index on deleted_at
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('email');
+    $table->softDeletes();
+    $table->index('deleted_at');  // ← Add this for performance
+});
+```
+
+⚙️ Configuration
+```php
+'SoftDeletesOnProduction' => [
+    'enabled'  => true,
+    'severity' => 'warning', // can be 'error' for strict CI
+    'check_all_tables' => false,  // false = only check large_table_names
+],
+```
+
+Global settings (shared with other rules):
+```php
+'large_table_names' => ['users', 'orders', 'invoices'],
+```
+
+If you want to check soft deletes on ALL tables (not just large ones):
+```php
+'SoftDeletesOnProduction' => [
+    'check_all_tables' => true,  // Check all tables for soft deletes
+],
+```
+
+🧾 Example output
+```bash
+[warning] SoftDeletesOnProduction
+→ Soft deletes on table 'users' may impact query performance. Large tables with soft deletes require careful indexing.
+
+[Suggestion #1] SoftDeletesOnProduction:
+  Option 1: Consider archiving old records to a separate table instead
+  Option 2: Use hard deletes with proper backups for large tables
+  Option 3: If soft deletes needed, ensure you have indexes on 'deleted_at' column
+  📖 Learn more: https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-softdeletesonproduction
+```
+
+### 🧠 Recommendation
+
+- **Default:** Avoid soft deletes on large production tables (> 100k rows)
+- **If necessary:** Add index on `deleted_at` column for query performance
+- **Better approach:** Archive old data to separate tables or use hard deletes
+- **Query optimization:** Always explicitly join with `->whereNull('deleted_at')` or use Eloquent's automatic scoping
+- **Reporting:** Consider separate read-only archive tables for analytics on deleted data
+
+---
+````
