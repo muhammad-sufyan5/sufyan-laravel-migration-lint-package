@@ -74,7 +74,25 @@ php artisan migrate:lint --json > storage/lint-report.json
 
 ```
 
-## ⚙️ Publishing Configuration
+---
+
+## 📋 Scope & Limitations
+
+### What We Analyze
+✅ **Laravel Schema Builder Operations** — All `$table->` method calls  
+✅ **Schema::create()** and **Schema::table()** methods  
+✅ **Column modifications** via `->change()`  
+✅ **Foreign keys**, **indexes**, **constraints**, **timestamps**  
+
+### What We Don't Analyze (By Design)
+⚠️ Raw SQL queries (`DB::statement()`, `DB::raw()`, etc.)  
+⚠️ Direct Eloquent operations (`User::update()`, model factories)  
+⚠️ Model traits and properties  
+⚠️ Data seeding operations  
+
+**Reason:** The linter focuses on statically analyzing schema builder patterns, which represent 99% of migration files. Raw SQL analysis requires different tooling.
+
+---
 
 You can publish the configuration file to customize rule settings:
 
