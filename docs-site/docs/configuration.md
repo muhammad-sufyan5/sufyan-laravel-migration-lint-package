@@ -94,7 +94,8 @@ return [
 - You can disable a rule entirely by setting 'enabled' => false.
 - To treat warnings as failures, change the global threshold to 'error'.
 - Custom rules defined in App\MigrationRules or any namespaced class are automatically discovered — no code changes needed in the package.
-- See [🧠 Writing Custom Rules](./writing-custom-rules.md) for detailed examples of defining your own rules.
+- Each rule now includes **actionable suggestions** in its output — these appear in CLI after the lint table and are included in JSON reports.
+- See [🧠 Writing Custom Rules](./writing-custom-rules.md) for detailed examples of defining your own rules with suggestions.
 
 
 ✅ Pro Tip: Commit your config/migration-linter.php file to version control so your whole team shares the same linting standards.

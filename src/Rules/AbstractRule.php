@@ -47,16 +47,23 @@ abstract class AbstractRule
     /**
      * Helper: create a warning Issue quickly.
      */
-    // ⬇️ Accept optional $column so rules can pass context
-    protected function warn(Operation $operation, string $message, ?string $column = null): Issue
-    {
+    // ⬇️ Accept optional $column, $suggestion, and $docsUrl for enhanced feedback
+    protected function warn(
+        Operation $operation,
+        string $message,
+        ?string $column = null,
+        ?string $suggestion = null,
+        ?string $docsUrl = null
+    ): Issue {
         return new Issue(
             $this->id(),
             $this->severity(),
             $message,
             $operation->file,
             $operation->line ?? 0,
-            $column ?? $operation->column
+            $column ?? $operation->column,
+            $suggestion,
+            $docsUrl
         );
     }
 }

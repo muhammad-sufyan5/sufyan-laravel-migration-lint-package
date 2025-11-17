@@ -108,6 +108,11 @@ return [
             'check_double' => true,
             'check_real'   => true,
         ],
+        'SoftDeletesOnProduction' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+            'check_all_tables' => false, // Set to true to check all tables, not just large_table_names
+        ],
 
 
     ],

@@ -55,7 +55,10 @@ class NoUnsignedBigIntRule extends AbstractRule
             return [
                 $this->warn(
                     $operation,
-                    "Avoid using unsignedBigInteger on table '{$operation->table}'. Use bigInteger() instead for better portability."
+                    "Avoid using unsignedBigInteger on table '{$operation->table}'. Use bigInteger() instead for better portability.",
+                    column: $operation->args,
+                    suggestion: 'Replace unsignedBigInteger() with bigInteger() for better cross-database compatibility.',
+                    docsUrl: 'https://laravel.com/docs/migrations#column-method-bigInteger'
                 ),
             ];
         }
@@ -97,6 +100,13 @@ If it finds any violations, they’ll appear in the standard lint report.
 
 ## 💡 Tips for Rule Authors
 - Use `warn()`, `error()`, or other helpers to create issues that respect severity from the config.
+- **Provide Suggestions** — Each `warn()` call can include `$suggestion` and `$docsUrl` parameters (optional):
+  ```php
+  $this->warn($operation, "Your message", column: $col, 
+              suggestion: "Here's what to do instead...", 
+              docsUrl: "https://docs-url.com")
+  ```
+- Suggestions appear in CLI output and are included in JSON reports for tool integration.
 - Keep rules focused — each rule should detect one kind of problem clearly.
 - Leverage Operation properties like:
     - $operation->method → migration method (e.g. string, dropColumn)
@@ -111,6 +121,10 @@ If it finds any violations, they’ll appear in the standard lint report.
 ```bash
 [warning] NoUnsignedBigIntRule  
 → Avoid using unsignedBigInteger on table 'users'. Use bigInteger() instead for better portability.
+
+[Suggestion #1] NoUnsignedBigIntRule:
+  Replace unsignedBigInteger() with bigInteger() for better cross-database compatibility.
+  📖 Learn more: https://laravel.com/docs/migrations#column-method-bigInteger
 ```
 ✅ That’s it!
 Your custom rules will now integrate seamlessly with Laravel Migration Linter’s reporting, severity configuration, and CI workflows.

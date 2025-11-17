@@ -56,13 +56,17 @@ Example output (simplified):
 ```bash
 [
   {
-    "ruleId": "DropColumnWithoutBackup",
+    "rule": "DropColumnWithoutBackup",
     "severity": "warning",
     "message": "Dropping column 'age' from table 'users' may result in data loss.",
-    "file": "2025_10_20_123456_update_users_table.php"
+    "file": "2025_10_20_123456_update_users_table.php",
+    "line": 15,
+    "suggestion": "Back up data before dropping. Consider renaming with suffix '_old'.",
+    "docs_url": "https://...docs/rules#-dropcolumnwithoutbackup"
   }
 ]
 ```
+**Note:** JSON output now includes `suggestion` and `docs_url` fields for easy integration with CI/CD tools.
 ---
 
 ### 🗂 Use a custom baseline file
@@ -133,13 +137,48 @@ For example, setting 'severity_threshold' => 'error' will fail the command only 
 
 ---
 
-## 💡 Pro Tips
+## � Understanding Suggestions
+
+Each warning includes **actionable suggestions** to help you fix the issue. When you run `php artisan migrate:lint`, you'll see:
+
+1. **The Warning Table** — Shows all issues with severity and details
+2. **Suggestions Section** — Detailed fix recommendations below the table
+
+Example:
+```
+⚠️  Lint Report
+┌──────────────┬───────────────────────────┬────────┬──────────┬─────────────┐
+│ File         │ Rule                      │ Column │ Severity │ Message     │
+├──────────────┼───────────────────────────┼────────┼──────────┼─────────────┤
+│ create_users │ AddNonNullableColumnWi... │ email  │ warning  │ Adding NOT  │
+│              │                           │        │          │ NULL...     │
+└──────────────┴───────────────────────────┴────────┴──────────┴─────────────┘
+
+[Suggestion #1] AddNonNullableColumnWithoutDefault:
+  Option 1: Add a default value:
+    $table->string('email')->default('')->nullable(false);
+  
+  Option 2: Make it nullable, then alter:
+    $table->string('email')->nullable();
+    DB::table('users')->update(['email' => '...']);
+    $table->string('email')->nullable(false)->change();
+  
+  📖 Learn more: https://...docs/rules#-addnonnullablecolumnwithoutdefault
+```
+
+**For JSON output**, suggestions are included in each issue object for programmatic access.
+
+---
+
+## �💡 Pro Tips
 
 - Use --generate-baseline once when introducing the linter to a legacy codebase, then commit the baseline file.
 - Regularly re-run php artisan migrate:lint in your CI/CD to catch unsafe schema changes early.
 - Combine with your existing testing jobs to prevent migration issues from reaching production.
+- **Each warning includes actionable suggestions** — follow them to fix issues quickly.
+- **JSON output includes suggestions and documentation links** — integrate with your tools!
 
-✅ That’s it!
-You’re ready to lint, baseline, and enforce migration safety across all environments.
+✅ That's it!
+You're ready to lint, baseline, and enforce migration safety across all environments.
 
 ---

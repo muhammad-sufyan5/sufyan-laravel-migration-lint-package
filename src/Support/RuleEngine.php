@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\App;
 use Sufyan\MigrationLinter\Rules\FloatColumnForMoney;
 use Sufyan\MigrationLinter\Rules\DropColumnWithoutBackup;
 use Sufyan\MigrationLinter\Rules\MissingIndexOnForeignKey;
+use Sufyan\MigrationLinter\Rules\SoftDeletesOnProduction;
 use Sufyan\MigrationLinter\Rules\AddNonNullableColumnWithoutDefault;
 use Sufyan\MigrationLinter\Rules\AddUniqueConstraintOnNonEmptyColumn;
 
@@ -30,6 +31,7 @@ class RuleEngine
             'DropColumnWithoutBackup' => DropColumnWithoutBackup::class,
             'AddUniqueConstraintOnNonEmptyColumn' => AddUniqueConstraintOnNonEmptyColumn::class,
             'FloatColumnForMoney' => FloatColumnForMoney::class,
+            'SoftDeletesOnProduction' => SoftDeletesOnProduction::class,
         ];
 
         // Load config-defined rules (allows app or custom packages)
