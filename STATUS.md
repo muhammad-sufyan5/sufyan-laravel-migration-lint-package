@@ -36,5 +36,3 @@
    - Push: feature/additional-features → main
    - Announce: Suggestions feature, documentation enhancements
 
-See IMPROVEMENT_ROADMAP.md for full details.
-
