@@ -6,7 +6,7 @@ use Sufyan\MigrationLinter\Contracts\FormatterInterface;
 use Sufyan\MigrationLinter\Support\Issue;
 
 /**
- * Abstract base formatter providing common functionality for all formatters.
+ * Abstract base formatter providing common functionality for all given formatters.
  *
  * Subclasses implement specific format logic (table, JSON, compact, summary).
  */
