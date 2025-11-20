@@ -3,6 +3,7 @@
 namespace Sufyan\MigrationLinter\Support;
 
 use Illuminate\Support\Facades\App;
+use Sufyan\MigrationLinter\Contracts\SeverityResolverInterface;
 use Sufyan\MigrationLinter\Rules\FloatColumnForMoney;
 use Sufyan\MigrationLinter\Rules\DropColumnWithoutBackup;
 use Sufyan\MigrationLinter\Rules\MissingIndexOnForeignKey;
@@ -14,8 +15,19 @@ class RuleEngine
 {
     protected array $rules = [];
 
-    public function __construct()
+    /**
+     * Optional SeverityResolverInterface dependency (for DI).
+     */
+    protected ?SeverityResolverInterface $severityResolver = null;
+
+    /**
+     * Constructor - can optionally inject SeverityResolverInterface.
+     *
+     * @param SeverityResolverInterface|null $severityResolver
+     */
+    public function __construct(?SeverityResolverInterface $severityResolver = null)
     {
+        $this->severityResolver = $severityResolver;
         $this->loadRules();
     }
 
@@ -52,6 +64,11 @@ class RuleEngine
 
             /** @var \Sufyan\MigrationLinter\Rules\AbstractRule $rule */
             $rule = app($class);
+
+            // ✅ Phase 5: Inject SeverityResolverInterface if available
+            if ($this->severityResolver) {
+                $rule->setSeverityResolver($this->severityResolver);
+            }
 
             if (isset($settings['severity'])) {
                 $rule->customSeverity = $settings['severity'];
