@@ -4,9 +4,13 @@ namespace Sufyan\MigrationLinter\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Sufyan\MigrationLinter\Support\Reporter;
-use Sufyan\MigrationLinter\Support\RuleEngine;
+use Sufyan\MigrationLinter\Contracts\SeverityResolverInterface;
+use Sufyan\MigrationLinter\Formatters\TableFormatter;
+use Sufyan\MigrationLinter\Formatters\JsonFormatter;
+use Sufyan\MigrationLinter\Formatters\CompactFormatter;
+use Sufyan\MigrationLinter\Formatters\SummaryFormatter;
 use Sufyan\MigrationLinter\Support\MigrationParser;
+use Sufyan\MigrationLinter\Support\RuleEngine;
 
 class LintMigrations extends Command
 {
@@ -28,6 +32,22 @@ class LintMigrations extends Command
     protected $description = 'Statically analyze migration files for risky schema changes.';
 
     /**
+     * Optional severity resolver (for DI).
+     */
+    protected ?SeverityResolverInterface $severityResolver = null;
+
+    /**
+     * Constructor to support dependency injection.
+     *
+     * @param SeverityResolverInterface|null $severityResolver
+     */
+    public function __construct(?SeverityResolverInterface $severityResolver = null)
+    {
+        parent::__construct();
+        $this->severityResolver = $severityResolver;
+    }
+
+    /**
      * Execute the console command.
      */
     public function handle(): int
@@ -46,10 +66,11 @@ class LintMigrations extends Command
             return self::FAILURE;
         }
 
-        $parser = new MigrationParser();
-        $operations = $parser->parse($path);
+        // ✅ Phase 6: Resolve dependencies from container
+        $parser = app(MigrationParser::class);
+        $engine = app(RuleEngine::class, ['severityResolver' => $this->severityResolver]);
 
-        $engine = new RuleEngine();
+        $operations = $parser->parse($path);
         $issues = $engine->run($operations);
 
         // Baseline Support
@@ -87,16 +108,64 @@ class LintMigrations extends Command
             return self::SUCCESS;
         }
 
-        // Render final report
-        $reporter = new Reporter($this->output);
-        $reporter->render(
-            $issues,
-            (bool) $this->option('json'),
-            false, // compact
-            (bool) $this->option('summary') // show summary footer
-        );
+        // ✅ Phase 6: Use new Formatters instead of Reporter
+        $formatter = $this->selectFormatter();
+        $output = $formatter->format($issues);
+        $this->output->write($output);
+
+        // Determine exit code based on severity threshold
         $threshold = config('migration-linter.severity_threshold', 'warning');
-        return $reporter->exitCode($issues, $threshold);
+        return $this->determineExitCode($issues, $threshold);
+    }
+
+    /**
+     * Select the appropriate formatter based on command options.
+     *
+     * @return \Sufyan\MigrationLinter\Contracts\FormatterInterface
+     */
+    protected function selectFormatter()
+    {
+        if ($this->option('json')) {
+            return new JsonFormatter();
+        }
+
+        if ($this->option('compact')) {
+            return new CompactFormatter();
+        }
+
+        if ($this->option('summary')) {
+            return new SummaryFormatter();
+        }
+
+        // Default: TableFormatter
+        return new TableFormatter();
+    }
+
+    /**
+     * Determine exit code based on issues and severity threshold.
+     *
+     * @param array $issues
+     * @param string $threshold
+     * @return int
+     */
+    protected function determineExitCode(array $issues, string $threshold): int
+    {
+        if (empty($issues)) {
+            return self::SUCCESS;
+        }
+
+        // Check if any issue meets or exceeds threshold
+        $severityRank = ['info' => 1, 'warning' => 2, 'error' => 3];
+        $thresholdRank = $severityRank[$threshold] ?? 2;
+
+        foreach ($issues as $issue) {
+            $issueRank = $severityRank[$issue->severity] ?? 1;
+            if ($issueRank >= $thresholdRank) {
+                return self::FAILURE;
+            }
+        }
+
+        return self::SUCCESS;
     }
 
     protected function listRules(): int
