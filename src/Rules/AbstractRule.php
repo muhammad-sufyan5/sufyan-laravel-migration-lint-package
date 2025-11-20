@@ -2,19 +2,50 @@
 
 namespace Sufyan\MigrationLinter\Rules;
 
+use Sufyan\MigrationLinter\Contracts\RuleInterface;
+use Sufyan\MigrationLinter\Contracts\SeverityResolverInterface;
 use Sufyan\MigrationLinter\Support\Operation;
 use Sufyan\MigrationLinter\Support\Issue;
 
-abstract class AbstractRule
+abstract class AbstractRule implements RuleInterface
 {
     /**
-     * Default severity level for this rule.
+     * Optional custom severity override for this rule instance.
      */
     public ?string $customSeverity = null;
 
+    /**
+     * Severity resolver for determining effective severity level.
+     */
+    protected ?SeverityResolverInterface $severityResolver = null;
+
+    /**
+     * Set the severity resolver (for dependency injection).
+     *
+     * @param SeverityResolverInterface $resolver
+     * @return void
+     */
+    public function setSeverityResolver(SeverityResolverInterface $resolver): void
+    {
+        $this->severityResolver = $resolver;
+    }
+
+    /**
+     * Get the severity level for this rule.
+     *
+     * Uses SeverityResolverInterface if available (Phase 4+), otherwise falls back
+     * to the legacy pattern for backward compatibility.
+     *
+     * @return string One of: 'error', 'warning', 'info'
+     */
     public function severity(): string
     {
-        // ✅ Priority: customSeverity (from config) > class-defined default > fallback warning
+        // ✅ Phase 4: Use injected SeverityResolverInterface if available
+        if ($this->severityResolver) {
+            return $this->severityResolver->resolve($this->id(), $this->customSeverity);
+        }
+
+        // ✅ Fallback: Legacy pattern for backward compatibility
         if ($this->customSeverity) {
             return $this->customSeverity;
         }
