@@ -1,4 +1,8 @@
-# 🧩 Laravel Migration Linter  
+# 🧩 Laravel Migration Linter 
+
+<p>
+  <img src="assets/preview.png" alt="Laravel Migration Linter report" width="900">
+</p>
 
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen?style=flat-square)](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
 [![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
