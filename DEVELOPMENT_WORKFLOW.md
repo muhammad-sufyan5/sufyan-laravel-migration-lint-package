@@ -1,8 +1,8 @@
 # Laravel Migration Linter — Development Workflow  
 **Vendor:** sufyan  
 **Author:** Sufyan  
-**Current Version:** 1.4.0 ✅ RELEASED  
-**Last Updated:** November 17, 2025
+**Current Version:** 2.0.0 ✅ (SOLID Refactoring)  
+**Last Updated:** November 20, 2025
 
 ---
 
@@ -14,7 +14,8 @@
 | **1.1.0** | ✅ Released | - | Enhanced rules, improved detection |
 | **1.2.0** | ✅ Released | - | Extended edge cases, better patterns |
 | **1.3.0** | ✅ Released | - | Bug fixes, stability improvements |
-| **1.4.0** | ✅ RELEASED | Nov 17, 2025 | SoftDeletesOnProduction + Suggestions System |
+| **1.4.0** | ✅ Released | Nov 17, 2025 | SoftDeletesOnProduction + Suggestions System |
+| **2.0.0** | ✅ RELEASED | Nov 20, 2025 | SOLID Principles Refactoring, Modular Formatters, DI Container |
 
 ---
 

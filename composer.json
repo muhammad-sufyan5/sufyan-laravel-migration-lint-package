@@ -1,5 +1,6 @@
 {
   "name": "sufyandev/laravel-migration-linter",
+  "version": "2.0.0",
   "description": "A lightweight Laravel package that analyzes and warns about risky database migration changes before they reach production.",
   "type": "library",
   "license": "MIT",

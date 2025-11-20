@@ -1,13 +1,12 @@
-![Laravel Migration Linter report](assets/preview.png)
-
 # 🧩 Laravel Migration Linter  
+
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen?style=flat-square)](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
 [![Migration Linter](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions/workflows/migration-linter.yml/badge.svg)](https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package/actions)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Laravel Version](https://img.shields.io/badge/Laravel-10%2B-orange?style=flat-square)](#)
-[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-v1.4.0-green?style=flat-square)](#)
+[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-blue?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-v2.0.0-green?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
@@ -21,12 +20,14 @@ A lightweight Laravel package that **analyzes your database migrations** and war
   - Unsafe column drops  
   - Risky unique constraints  
   - Floating-point money fields
+  - Unsafe soft deletes on large tables
 - ⚙️ Configurable rule severities (`info`, `warning`, `error`)
 - 💡 **Actionable suggestions** — Each warning includes fix recommendations
 - 🔗 **Documentation links** — Every suggestion has a link to detailed docs
 - 🧠 Baseline support to ignore legacy issues
-- 🧾 JSON or table output for CI/CD (with suggestions included)
-- 🧩 Fully documented & tested (v1.4.0)
+- 🧾 Multiple output formats: Table, JSON, Compact, Summary
+- 🏗️ SOLID architecture with dependency injection
+- ✅ 100% backward compatible with v1.4.0
 
 📘 **Read full rule docs:**  
 👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
@@ -142,15 +143,36 @@ jobs:
 ```
 ---
 
-## � What's New in v1.4.0
+## ✨ What's New in v2.0.0
 
-- ✨ **Suggestions System** — Each warning includes actionable fix recommendations
-- 🔗 **Documentation Links** — Every issue links to detailed docs for the rule
-- ✅ **SoftDeletesOnProduction** — New rule for detecting unsafe soft deletes on large tables
-- 📊 **Enhanced Reporter** — JSON and table output include suggestions
-- ✅ 100% test coverage with 43 passing tests
+**Complete SOLID Principles Refactoring**
+
+- 🏗️ **8 Core Interfaces** — Dependency injection contracts for all components
+- 🔧 **3 Service Classes** — Reusable business logic layer (LaravelConfigProvider, SeverityResolver, LintService)
+- 🎨 **5 Formatter Classes** — Modular output system (Table, JSON, Compact, Summary, Base)
+- 🔌 **Dependency Injection** — Automatic container bindings via service provider
+- 📊 **Enhanced Architecture** — SOLID principles throughout (SRP, OCP, LSP, ISP, DIP)
+- ✅ **144 tests passing** — Comprehensive test coverage with 259 assertions
+- 🔄 **100% backward compatible** — No breaking changes, all v1.4.0 commands work identically
+- 🎯 **Better table formatting** — Fixed Symfony Table component for proper alignment
+
+**Migration from v1.4.0:**
+All commands work exactly the same. No changes needed:
+```bash
+php artisan migrate:lint                  # Still works
+php artisan migrate:lint --json           # Still works
+php artisan migrate:lint --generate-baseline  # Still works
+```
 
 ---
+
+## ✨ What Was New in v1.4.0
+
+- Suggestions System — Each warning includes actionable fix recommendations
+- Documentation Links — Every issue links to detailed docs for the rule
+- SoftDeletesOnProduction — New rule for detecting unsafe soft deletes on large tables
+- Enhanced Reporter — JSON and table output include suggestions
+- 100% test coverage with 43 passing tests
 
 ## 🧑‍💻 Contributing
 Contributions are welcome!
