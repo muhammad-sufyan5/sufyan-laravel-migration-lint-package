@@ -9,6 +9,32 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## 🚀 [v2.1.0] — 2025-12-24
+
+### 🆕 Added
+- **New Rule: `RenamingColumnWithoutIndex`** — Detects column rename operations that can cause table locks and downtime
+  - Warns when using `$table->renameColumn()` on large tables
+  - Provides 3-phase zero-downtime migration strategy
+  - Configurable to check large tables only or all tables
+  - Supports safe comment bypass: `// safe rename`
+
+### ⚙️ Improved
+- **Enhanced MigrationParser** — Now properly skips commented-out lines
+  - Lines starting with `//` or `/*` are ignored during parsing
+  - Prevents false positives from commented code
+  - Tracks previous line context for safe comment detection
+- **Better Safe Comment Detection** — Comments on line above operations are now recognized
+  - `// safe rename` on line before operation works correctly
+  - `/* safe rename */` before operation works correctly
+  - Inline comments continue to work: `$table->renameColumn(...); // safe rename`
+
+### 🧰 Developer
+- Added 13 comprehensive unit tests for `RenamingColumnWithoutIndex` rule
+- Parser improvements benefit all existing rules
+- Enhanced rawCode context includes previous line for better analysis
+
+---
+
 ## 🚀 [1.0.0] — 2025-10-15
 
 ### 🆕 Added

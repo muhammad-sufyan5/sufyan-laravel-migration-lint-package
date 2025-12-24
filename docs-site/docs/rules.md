@@ -30,6 +30,7 @@ When the linter detects an issue, it provides specific steps to fix it and links
 - [AddUniqueConstraintOnNonEmptyColumn](#-adduniqueconstraintonnonemptycolumn)
 - [FloatColumnForMoney](#-floatcolumnformoney)
 - [SoftDeletesOnProduction](#-softdeletesonproduction)
+- [RenamingColumnWithoutIndex](#-renamingcolumnwithoutindex)
 
 ---
 
@@ -525,6 +526,140 @@ If you want to check soft deletes on ALL tables (not just large ones):
 - **Better approach:** Archive old data to separate tables or use hard deletes
 - **Query optimization:** Always explicitly join with `->whereNull('deleted_at')` or use Eloquent's automatic scoping
 - **Reporting:** Consider separate read-only archive tables for analytics on deleted data
+
+---
+
+## 🧩 RenamingColumnWithoutIndex
+
+**Category:** Performance / Downtime  
+**Default severity:** `warning`
+
+---
+
+### 🔍 What it checks
+Warns when using `renameColumn()` to rename database columns, which can cause **table locks** and **downtime** on production databases, especially on large tables.
+
+The rule detects:
+- `$table->renameColumn('old_name', 'new_name')` operations
+- By default, only checks tables listed in `large_table_names` config
+- Can be configured to check all tables regardless of size
+
+---
+
+### 💣 Why it matters
+- **MySQL/MariaDB:** `renameColumn()` uses `ALTER TABLE` which locks the entire table during execution
+- **Large tables:** Renaming a column on a table with millions of rows can take minutes or hours
+- **Production impact:** All queries to that table are blocked during the rename operation
+- **Deployment risk:** Can cause application downtime and timeouts during migrations
+- **No rollback:** If rename fails mid-way, you may have an inconsistent schema state
+
+---
+
+### ⚠️ Triggers
+```php
+// 🚫 Direct column rename on large table
+Schema::table('users', function (Blueprint $table) {
+    $table->renameColumn('email_address', 'email');
+});
+```
+
+✅ Safe alternatives
+```php
+// ✅ Zero-downtime approach (3-phase migration)
+
+// Migration 1: Add new column
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email')->nullable()->after('email_address');
+});
+
+// Migration 2: Migrate data (after deployment, in batches)
+DB::table('users')
+    ->whereNull('email')
+    ->chunkById(1000, function ($records) {
+        foreach ($records as $record) {
+            DB::table('users')
+                ->where('id', $record->id)
+                ->update(['email' => $record->email_address]);
+        }
+    });
+
+// Migration 3: Drop old column (after code updated to use new column)
+Schema::table('users', function (Blueprint $table) {
+    $table->dropColumn('email_address'); // safe drop
+});
+
+// ✅ Or bypass check if verified safe (small table, maintenance window)
+Schema::table('users', function (Blueprint $table) {
+    $table->renameColumn('old', 'new'); // safe rename
+});
+```
+
+⚙️ Configuration
+```php
+'RenamingColumnWithoutIndex' => [
+    'enabled'  => true,
+    'severity' => 'warning', // or 'error' to block in CI
+    'check_large_tables_only' => true, // false = check all tables
+],
+```
+
+Global settings (shared with other rules):
+```php
+'large_table_names' => ['users', 'orders', 'invoices'],
+```
+
+If you want to check ALL tables for column renaming (not just large ones):
+```php
+'RenamingColumnWithoutIndex' => [
+    'check_large_tables_only' => false,  // Check all tables
+],
+```
+
+🧾 Example output
+```bash
+[warning] RenamingColumnWithoutIndex
+→ Renaming column 'email_address' to 'email' on table 'users' can cause table locks and downtime, especially on large tables.
+
+[Suggestion #1] RenamingColumnWithoutIndex:
+  For zero-downtime column renaming, use this phased approach:
+  
+  Migration 1 - Add new column:
+    Schema::table('users', function (Blueprint $table) {
+        $table->string('email')->nullable()->after('email_address');
+    });
+  
+  Migration 2 - Migrate data (after deployment):
+    DB::table('users')
+        ->whereNull('email')
+        ->chunkById(1000, function ($records) {
+            foreach ($records as $record) {
+                DB::table('users')
+                    ->where('id', $record->id)
+                    ->update(['email' => $record->email_address]);
+            }
+        });
+  
+  Migration 3 - Drop old column (after code updated):
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('email_address'); // safe drop
+    });
+  
+  Alternative: Add '// safe rename' comment if you've verified the table is small or unused.
+  
+  📖 Learn more: https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-renamingcolumnwithoutindex
+```
+
+### 🧠 Recommendation
+
+- **Default:** Avoid direct `renameColumn()` on production tables with > 10k rows
+- **Best practice:** Use 3-phase migration approach (add → migrate → drop)
+- **Data migration:** Always use `chunkById()` to avoid memory issues on large datasets
+- **Deployment:** Allow time between phases for code deployment and verification
+- **Monitoring:** Monitor query performance during data migration phase
+- **Safe bypass:** Use `// safe rename` comment only after verifying:
+  - Table is small (< 10k rows)
+  - Rename happens during maintenance window
+  - You have database backups
 
 ---
 ````

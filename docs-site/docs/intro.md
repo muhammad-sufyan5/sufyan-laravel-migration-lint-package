@@ -27,8 +27,9 @@ It acts as a **static analyzer** for your migrations — preventing downtime, da
 ## 🚀 Key Features
 
 - 🧠 **Safety-first linting** — Detects dangerous operations like adding non-nullable columns without defaults or dropping columns.  
-- ⚡ **Performance awareness** — Warns when missing indexes or inefficient data types can impact query speed.  
-- 💾 **Data integrity checks** — Alerts when unique constraints, float columns, or type changes may corrupt data.  
+- ⚡ **Performance awareness** — Warns when missing indexes, column renames, or inefficient data types can impact query speed.  
+- 💾 **Data integrity checks** — Alerts when unique constraints, float columns, or type changes may corrupt data.
+- 🔒 **Downtime prevention** — Detects column renames and operations that cause table locks on production databases.
 - 🧩 **Configurable rules** — Enable, disable, or adjust severity (`info`, `warning`, `error`) per project.  
 - 🧱 **Baseline support** — Ignore known legacy issues and focus only on new violations.  
 - 📊 **Developer-friendly reports** — Colorized console output, JSON export, and compact mode.  
