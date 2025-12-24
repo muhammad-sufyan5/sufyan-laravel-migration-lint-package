@@ -34,6 +34,8 @@ It acts as a **static analyzer** for your migrations — preventing downtime, da
 - 🧱 **Baseline support** — Ignore known legacy issues and focus only on new violations.  
 - 📊 **Developer-friendly reports** — Colorized console output, JSON export, and compact mode.  
 - 🤖 **CI/CD ready** — Integrates cleanly with GitHub Actions, GitLab, and other pipelines.
+- 🏗️ **SOLID Architecture** (v2.0.0) — Extensible with dependency injection, custom formatters, and services.  
+- 💡 **Actionable Suggestions** — Every warning includes fix recommendations and documentation links.
 
 ---
 
