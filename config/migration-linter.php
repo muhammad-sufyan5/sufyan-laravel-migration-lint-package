@@ -113,6 +113,16 @@ return [
             'severity' => 'warning',
             'check_all_tables' => false, // Set to true to check all tables, not just large_table_names
         ],
+        'RenamingColumnWithoutIndex' => [
+            'enabled'  => true,
+            'severity' => 'warning',
+            'check_large_tables_only' => true, // Set to false to check all tables regardless of size
+        ],
+        'ChangeColumnTypeOnLargeTable' => [
+            'enabled'  => true,
+            'severity' => 'error', // High severity - can cause significant downtime
+            'check_large_tables_only' => true, // Set to false to check all tables regardless of size
+        ],
 
 
     ],

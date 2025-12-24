@@ -61,40 +61,67 @@ class MigrationParser
             $table = $match[2];        // table name
             $body = $match[3];         // closure content
 
-            // Match $table->method('column_name', ...)
-            preg_match_all('/\$table->([a-zA-Z0-9_]+)\((.*?)\)/', $body, $ops, PREG_SET_ORDER);
-
-            foreach ($ops as $op) {
-                $method = $op[1];
-                $args = trim($op[2]);
-
-                // Extract column name if first argument is a string
-                $column = null;
-                if (preg_match('/^[\'"]([^\'"]+)[\'"]/', $args, $colMatch)) {
-                    $column = $colMatch[1];
+            // Split body into lines to check for comments
+            $lines = explode("\n", $body);
+            $previousLine = ''; // Track previous line for safe comment detection
+            
+            foreach ($lines as $lineNumber => $line) {
+                $trimmedLine = trim($line);
+                
+                // Skip empty lines
+                if (empty($trimmedLine)) {
+                    continue;
                 }
-
-                // Smart defaults for common shorthand Laravel methods
-                $specialColumns = [
-                    'id' => 'id',
-                    'timestamps' => 'created_at/updated_at',
-                    'softDeletes' => 'deleted_at',
-                    'rememberToken' => 'remember_token',
-                ];
-
-                if (! $column && isset($specialColumns[$method])) {
-                    $column = $specialColumns[$method];
+                
+                // Skip lines that are commented out
+                if (preg_match('/^\s*\/\//', $line) || preg_match('/^\s*\/\*/', $line) || preg_match('/^\s*\*/', $line)) {
+                    // Store this comment line as previous for next iteration
+                    $previousLine = $line;
+                    continue;
                 }
+                
+                // Match $table->method('column_name', ...) on this line
+                preg_match_all('/\$table->([a-zA-Z0-9_]+)\((.*?)\)/', $line, $ops, PREG_SET_ORDER);
 
-                $operations[] = [
-                    'file' => $filename,
-                    'path' => $path,
-                    'table' => $table,
-                    'schema_method' => $schemaMethod,
-                    'method' => $method,
-                    'column' => $column,
-                    'args' => $args,
-                ];
+                foreach ($ops as $op) {
+                    $method = $op[1];
+                    $args = trim($op[2]);
+
+                    // Extract column name if first argument is a string
+                    $column = null;
+                    if (preg_match('/^[\'"]([^\'"]+)[\'"]/', $args, $colMatch)) {
+                        $column = $colMatch[1];
+                    }
+
+                    // Smart defaults for common shorthand Laravel methods
+                    $specialColumns = [
+                        'id' => 'id',
+                        'timestamps' => 'created_at/updated_at',
+                        'softDeletes' => 'deleted_at',
+                        'rememberToken' => 'remember_token',
+                    ];
+
+                    if (! $column && isset($specialColumns[$method])) {
+                        $column = $specialColumns[$method];
+                    }
+
+                    // Combine current line with previous line (for safe comments above)
+                    $combinedContext = $previousLine . "\n" . $line;
+
+                    $operations[] = [
+                        'file' => $filename,
+                        'path' => $path,
+                        'table' => $table,
+                        'schema_method' => $schemaMethod,
+                        'method' => $method,
+                        'column' => $column,
+                        'args' => $args,
+                        'rawCode' => trim($combinedContext), // Store current + previous line for safe comment detection
+                    ];
+                }
+                
+                // Update previous line for next iteration
+                $previousLine = $line;
             }
         }
 

@@ -9,8 +9,8 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Laravel Version](https://img.shields.io/badge/Laravel-10%2B-orange?style=flat-square)](#)
-[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-blue?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-v2.0.0-green?style=flat-square)](#)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-v2.1.0-green?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  
@@ -24,14 +24,17 @@ A lightweight Laravel package that **analyzes your database migrations** and war
   - Unsafe column drops  
   - Risky unique constraints  
   - Floating-point money fields
-  - Unsafe soft deletes on large tables
+  - Unsafe column renaming (table locks)
+  - Column type changes on large tables (table locks)
+  - Soft deletes on large tables
 - ⚙️ Configurable rule severities (`info`, `warning`, `error`)
-- 💡 **Actionable suggestions** — Each warning includes fix recommendations
+- 💡 **Actionable suggestions** — Each warning includes fix recommendations with grouped display
 - 🔗 **Documentation links** — Every suggestion has a link to detailed docs
 - 🧠 Baseline support to ignore legacy issues
-- 🧾 Multiple output formats: Table, JSON, Compact, Summary
-- 🏗️ SOLID architecture with dependency injection
-- ✅ 100% backward compatible with v1.4.0
+- 🧾 JSON or table output for CI/CD (with suggestions included)
+- 📊 **HTML Reports** — Generate beautiful, interactive HTML reports with charts and filtering
+- 🎨 **Clean output** — Suggestions grouped by rule type to avoid repetition
+- 🧩 Fully documented & tested (84 tests, 200 assertions)
 
 📘 **Read full rule docs:**  
 👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
@@ -57,14 +60,16 @@ php artisan migrate:lint
 
 ### Common Options
 
-| Option                | Description                                |
-| --------------------- | ------------------------------------------ |
-| `--json`              | Output structured JSON (great for CI)      |
-| `--path=`             | Lint a specific migration file/folder      |
-| `--baseline`          | Use a custom baseline file                 |
-| `--generate-baseline` | Create a baseline to ignore current issues |
-| `--rules`             | View all rules and their enabled status    |
-| `--summary`           | Display summary footer in output           |
+| Option                | Description                                                     |
+| --------------------- | --------------------------------------------------------------- |
+| `--json`              | Output structured JSON (great for CI)                           |
+| `--html=`             | Generate interactive HTML report (default: storage/app/...)     |
+| `--path=`             | Lint a specific migration file/folder                           |
+| `--baseline`          | Use a custom baseline file                                      |
+| `--generate-baseline` | Create a baseline to ignore current issues                      |
+| `--rules`             | View all rules and their enabled status                         |
+| `--summary`           | Display summary footer in output                                |
+| `--no-suggestions`    | Hide suggestions (show only warnings table)                     |
 
 ### Example Usage
 

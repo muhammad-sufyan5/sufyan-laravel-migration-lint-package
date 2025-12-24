@@ -4,6 +4,7 @@ namespace Sufyan\MigrationLinter\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Sufyan\MigrationLinter\Support\HtmlReporter;
 use Sufyan\MigrationLinter\Contracts\SeverityResolverInterface;
 use Sufyan\MigrationLinter\Formatters\TableFormatter;
 use Sufyan\MigrationLinter\Formatters\JsonFormatter;
@@ -24,7 +25,9 @@ class LintMigrations extends Command
                             {--json : Output results in JSON format}
                             {--baseline= : Path to baseline file for ignoring known issues}
                             {--rules : Display available rules and exit}
-                            {--summary : Display summary footer in output}';
+                            {--summary : Display summary footer in output}
+                            {--no-suggestions : Hide migration suggestions from output}
+                            {--html=? : Generate HTML report (default: storage/app/migration-lint-report.html)}';
 
     /**
      * The console command description.
@@ -108,7 +111,15 @@ class LintMigrations extends Command
             return self::SUCCESS;
         }
 
-        // ✅ Phase 6: Use new Formatters instead of Reporter
+        // Generate HTML report if requested
+        if ($this->option('html') !== false) {
+            $htmlPath = $this->option('html') ?: 'storage/app/migration-lint-report.html';
+            $htmlReporter = new HtmlReporter();
+            $htmlReporter->generate($issues, $htmlPath);
+            $this->info("📄 HTML report generated: {$htmlPath}");
+        }
+
+        // ✅ Use new Formatters for console output
         $formatter = $this->selectFormatter();
         $output = $formatter->format($issues);
         $this->output->write($output);
