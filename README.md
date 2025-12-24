@@ -24,13 +24,16 @@ A lightweight Laravel package that **analyzes your database migrations** and war
   - Risky unique constraints  
   - Floating-point money fields
   - Unsafe column renaming (table locks)
+  - Column type changes on large tables (table locks)
   - Soft deletes on large tables
 - ⚙️ Configurable rule severities (`info`, `warning`, `error`)
-- 💡 **Actionable suggestions** — Each warning includes fix recommendations
+- 💡 **Actionable suggestions** — Each warning includes fix recommendations with grouped display
 - 🔗 **Documentation links** — Every suggestion has a link to detailed docs
 - 🧠 Baseline support to ignore legacy issues
 - 🧾 JSON or table output for CI/CD (with suggestions included)
-- 🧩 Fully documented & tested (v1.4.0)
+- 📊 **HTML Reports** — Generate beautiful, interactive HTML reports with charts and filtering
+- 🎨 **Clean output** — Suggestions grouped by rule type to avoid repetition
+- 🧩 Fully documented & tested (84 tests, 200 assertions)
 
 📘 **Read full rule docs:**  
 👉 [https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/](https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/)
@@ -54,14 +57,16 @@ php artisan migrate:lint
 ```
 Common options:
 
-| Option                | Description                                |
-| --------------------- | ------------------------------------------ |
-| `--json`              | Output structured JSON (great for CI)      |
-| `--path=`             | Lint a specific migration file/folder      |
-| `--baseline`          | Use a custom baseline file                 |
-| `--generate-baseline` | Create a baseline to ignore current issues |
-| `--rules`             | View all rules and their enabled status    |
-| `--summary`           | Display summary footer in output           |
+| Option                | Description                                                     |
+| --------------------- | --------------------------------------------------------------- |
+| `--json`              | Output structured JSON (great for CI)                           |
+| `--html=`             | Generate interactive HTML report (default: storage/app/...)     |
+| `--path=`             | Lint a specific migration file/folder                           |
+| `--baseline`          | Use a custom baseline file                                      |
+| `--generate-baseline` | Create a baseline to ignore current issues                      |
+| `--rules`             | View all rules and their enabled status                         |
+| `--summary`           | Display summary footer in output                                |
+| `--no-suggestions`    | Hide suggestions (show only warnings table)                     |
 
 Example Usage
 

@@ -19,9 +19,11 @@ class Reporter
      * @param  Issue[]  $issues
      * @param  bool  $json
      * @param  bool  $compact
+     * @param  bool  $showSummary
+     * @param  bool  $showSuggestions
      * @return void
      */
-    public function render(array $issues, bool $json = false, bool $compact = false, bool $showSummary  = false): void
+    public function render(array $issues, bool $json = false, bool $compact = false, bool $showSummary = false, bool $showSuggestions = true): void
     {
         if ($json) {
             $this->renderJson($issues);
@@ -41,13 +43,13 @@ class Reporter
             return;
         }
 
-        $this->renderTable($issues, $showSummary);
+        $this->renderTable($issues, $showSummary, $showSuggestions);
     }
 
     /**
      * Render as formatted table with truncation for small terminals.
      */
-    protected function renderTable(array $issues, bool $showSummary = false): void
+    protected function renderTable(array $issues, bool $showSummary = false, bool $showSuggestions = true): void
     {
         $this->output->writeln("\n<options=bold>⚠️  Lint Report</>");
 
@@ -79,17 +81,40 @@ class Reporter
         $table->setRows($rows);
         $table->render();
 
-        // Display suggestions for each issue
-        $this->output->newLine();
-        foreach ($issues as $index => $issue) {
-            if ($issue->suggestion) {
-                $suggestionNum = $index + 1;
-                $this->output->writeln("<fg=cyan>[Suggestion #{$suggestionNum}]</> {$issue->ruleId}:");
-                $this->output->writeln("  {$issue->suggestion}");
-                if ($issue->docsUrl) {
-                    $this->output->writeln("  📖 Learn more: {$issue->docsUrl}");
-                }
+        // Display suggestions grouped by rule with better formatting
+        if ($showSuggestions) {
+            $issuesWithSuggestions = array_filter($issues, fn($i) => !empty($i->suggestion));
+            
+            if (!empty($issuesWithSuggestions)) {
                 $this->output->newLine();
+                $this->output->writeln('<options=bold>💡 Suggestions & Recommendations</>');
+                $this->output->writeln(str_repeat('═', 60));
+                $this->output->newLine();
+
+                // Group issues by rule for cleaner display
+                $groupedByRule = [];
+                foreach ($issuesWithSuggestions as $issue) {
+                    $groupedByRule[$issue->ruleId][] = $issue;
+                }
+
+                foreach ($groupedByRule as $ruleId => $ruleIssues) {
+                    $this->output->writeln("<fg=cyan;options=bold>📋 {$ruleId}</> <fg=gray>(" . count($ruleIssues) . " occurrence(s))</>");
+                    $this->output->writeln(str_repeat('─', 60));
+                    
+                    // Show suggestion only once per rule (they're the same)
+                    $suggestion = $ruleIssues[0]->suggestion;
+                    $lines = explode("\n", $suggestion);
+                    foreach ($lines as $line) {
+                        $this->output->writeln("   " . $line);
+                    }
+                    
+                    if ($ruleIssues[0]->docsUrl) {
+                        $this->output->newLine();
+                        $this->output->writeln("   <fg=blue>📖 Documentation:</> {$ruleIssues[0]->docsUrl}");
+                    }
+                    
+                    $this->output->newLine();
+                }
             }
         }
 

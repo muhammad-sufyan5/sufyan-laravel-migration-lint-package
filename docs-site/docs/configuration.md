@@ -125,6 +125,11 @@ return [
             'severity' => 'warning',
             'check_large_tables_only' => true, // Check only large tables
         ],
+        'ChangeColumnTypeOnLargeTable' => [
+            'enabled'  => true,
+            'severity' => 'error', // High severity - can cause significant downtime
+            'check_large_tables_only' => true, // Check only large tables
+        ],
     ],
 ];
 ```
@@ -187,6 +192,12 @@ return [
 #### RenamingColumnWithoutIndex
 ```php
 'check_large_tables_only' => true,  // Only check large_table_names (default)
+```
+
+#### ChangeColumnTypeOnLargeTable
+```php
+'check_large_tables_only' => true,  // Only check large_table_names (default)
+'severity' => 'error',              // High severity due to potential for significant downtime
 ```
 
 

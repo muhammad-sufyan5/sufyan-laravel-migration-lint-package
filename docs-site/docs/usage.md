@@ -20,10 +20,12 @@ You can customize the linting behavior using the following flags and options:
 | `--generate-baseline` | Create a baseline JSON file (`migration-linter-baseline.json`) that records current issues, allowing you to ignore them in future runs (useful when introducing the linter to legacy projects). |
 | `--path=`             | Lint a specific file or directory instead of the default `database/migrations` folder.                                                                                                          |
 | `--json`              | Output results in structured JSON format (ideal for CI/CD or automation).                                                                                                                       |
+| `--html=`             | Generate an interactive HTML report. If no path specified, defaults to `storage/app/migration-lint-report.html`.                                                                               |
 | `--baseline=`         | Provide a custom path to a baseline file (overrides the default baseline file).                                                                                                                 |
 | `--compact`           | Display a shorter, condensed table layout for smaller terminals or narrow CI logs.                                                                                                              |
-| `--rules`           | View all rules and their enabled statuses.                                                |
-| `--summary`           | Display summary footer in output.                                              |
+| `--rules`             | View all rules and their enabled statuses.                                                                                                                                                      |
+| `--summary`           | Display summary footer in output.                                                                                                                                                               |
+| `--no-suggestions`    | Hide migration suggestions from output (show only the warnings table).                                                                                                                          |
 
 ---
 
@@ -100,20 +102,84 @@ Example output:
 ```bash
 php artisan migrate:lint --summary
 ```
+Example output includes a summary section with total files scanned, issue counts by severity, and overall status.
+
+---
+
+### 🎨 Hide Suggestions (cleaner output)
+```bash
+php artisan migrate:lint --no-suggestions
+```
+This displays only the warnings table without the detailed migration suggestions. Useful when you're familiar with the issues and want a compact view.
+
+**Combine flags for customized output:**
+```bash
+# Table only (no suggestions, no summary)
+php artisan migrate:lint --no-suggestions
+
+# Table + summary (no suggestions)
+php artisan migrate:lint --summary --no-suggestions
+
+# Full report with everything (default)
+php artisan migrate:lint --summary
+```
+
+**Note:** Suggestions are grouped by rule type to avoid repetition. If you have multiple violations of the same rule, the suggestion is shown only once with an occurrence count.
+
+---
+
+### 📊 Example Output (with grouped suggestions)
+```bash
+php artisan migrate:lint --summary
+```
 Example output:
 ```bash
-� Summary
-───────────────────────────────────
-� Total Files Scanned:     6
-� Issues Found:            15
-⚠️  Warnings:              15
-❌ Errors:                 0
-� Info:                    0
+⚠️  Lint Report
 
++--------------------------------+-------------------------------+--------+----------+--------------------------------+
+| File                           | Rule                          | Column | Severity | Message                        |
++--------------------------------+-------------------------------+--------+----------+--------------------------------+
+| 2024_01_15_create_orders.php   | ChangeColumnTypeOnLargeTable  | price  | error    | Changing column type with ->c… |
+| 2024_01_15_create_orders.php   | ChangeColumnTypeOnLargeTable  | status | error    | Changing column type with ->c… |
+| 2024_01_20_rename_user.php     | RenamingColumnWithoutIndex    | name   | warning  | Renaming column 'old_name' to… |
++--------------------------------+-------------------------------+--------+----------+--------------------------------+
+
+💡 Suggestions & Recommendations
+════════════════════════════════════════════════════════════
+
+📋 ChangeColumnTypeOnLargeTable (2 occurrences)
+────────────────────────────────────────────────────────────
+   **Recommended Migration Strategy:**
+   
+   ✅ **Option 1: Zero-Downtime Multi-Step Migration**
+   [Detailed migration steps with code examples...]
+   
+   ⚠️ **Option 2: Maintenance Window**
+   [Alternative approach...]
+   
+   📖 Documentation: https://docs.example.com/...
+
+📋 RenamingColumnWithoutIndex (1 occurrence)
+────────────────────────────────────────────────────────────
+   [3-phase zero-downtime strategy...]
+   📖 Documentation: https://docs.example.com/...
+
+📊 Summary
+───────────────────────────────────
+🧩 Total Files Scanned:     3
+🔍 Issues Found:            3
+⚠️  Warnings:               1
+❌ Errors:                  2
+💡 Info:                    0
 
  [WARNING] ⚠️  Some migrations contain potential risks.
-
 ```
+
+**Key Features:**
+- **Grouped Suggestions** — Same rule violations show suggestion only once with occurrence count
+- **Visual Hierarchy** — Clear sections with proper separators (═ and ─)
+- **Color Coding** — Cyan for rules, blue for docs, severity-based colors
+- **Minimal Repetition** — Clean, professional output
 
 ---
 

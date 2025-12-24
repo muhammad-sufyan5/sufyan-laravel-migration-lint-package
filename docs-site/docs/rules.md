@@ -31,6 +31,7 @@ When the linter detects an issue, it provides specific steps to fix it and links
 - [FloatColumnForMoney](#-floatcolumnformoney)
 - [SoftDeletesOnProduction](#-softdeletesonproduction)
 - [RenamingColumnWithoutIndex](#-renamingcolumnwithoutindex)
+- [ChangeColumnTypeOnLargeTable](#-changecolumntypeonlargetable)
 
 ---
 
@@ -660,6 +661,218 @@ If you want to check ALL tables for column renaming (not just large ones):
   - Table is small (< 10k rows)
   - Rename happens during maintenance window
   - You have database backups
+
+---
+
+## 🔄 ChangeColumnTypeOnLargeTable
+
+**Category:** Performance / Downtime Risk  
+**Default severity:** `error`
+
+---
+
+### 🔍 What it checks
+Detects when you're changing a column's data type using `->change()` on large tables. This operation requires MySQL/PostgreSQL to rebuild the entire table, which can cause:
+- Extended table locks (minutes to hours)
+- Application downtime
+- Database connection exhaustion
+- Failed deployments on production
+
+The rule detects 25+ column type methods including:
+- String types: `string()`, `char()`, `text()`, `longText()`, etc.
+- Numeric types: `integer()`, `bigInteger()`, `decimal()`, `float()`, etc.
+- Date/time types: `datetime()`, `timestamp()`, `date()`, etc.
+- Other types: `boolean()`, `enum()`, `json()`, `uuid()`, etc.
+
+---
+
+### 💣 Why it matters
+- **Table Locks:** ALTER TABLE locks the entire table during type changes
+- **Long Duration:** On tables with millions of rows, this can take hours
+- **Downtime:** Users get "table is locked" errors during the migration
+- **Memory Issues:** Large tables may cause out-of-memory errors
+- **Failed Deploys:** Migrations may timeout in production
+
+**Real-world impact:**
+- 1M row table: 5-30 minutes of downtime
+- 10M row table: 30 minutes - 2 hours of downtime
+- 100M+ row table: Multiple hours, may require special tools
+
+---
+
+### ⚠️ Triggers
+
+```php
+// ❌ Dangerous: Locks entire table
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email', 255)->change();  // String length change
+    $table->bigInteger('amount')->change();  // Type change
+    $table->decimal('price', 10, 2)->change(); // Precision change
+});
+
+// ❌ Also detected
+$table->text('description')->change();
+$table->datetime('created_at')->change();
+$table->boolean('is_active')->change();
+$table->enum('status', ['active', 'inactive'])->change();
+```
+
+### ✅ Safe Alternatives
+
+**Option 1: Zero-Downtime Multi-Step Migration (Recommended)**
+
+```php
+// Migration 1: Add new column with desired type
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email_new', 255)->nullable()->after('email');
+});
+
+// Migration 2: Backfill data in batches (run after deploy)
+DB::table('users')
+    ->whereNull('email_new')
+    ->chunkById(1000, function ($records) {
+        foreach ($records as $record) {
+            DB::table('users')
+                ->where('id', $record->id)
+                ->update(['email_new' => $record->email]);
+        }
+    });
+
+// Migration 3: Update application code to use email_new
+// (Deploy application changes)
+
+// Migration 4: Drop old column
+Schema::table('users', function (Blueprint $table) {
+    $table->dropColumn('email'); // safe drop
+    $table->renameColumn('email_new', 'email'); // safe rename
+});
+```
+
+**Option 2: Maintenance Window Approach**
+
+```php
+// Schedule during low-traffic period (e.g., 2 AM)
+// Put application in maintenance mode
+Artisan::call('down');
+
+// Run migration with increased timeout
+DB::statement('SET SESSION max_execution_time = 7200;');
+
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email', 255)->change(); // maintenance window
+});
+
+Artisan::call('up');
+```
+
+**Option 3: Use pt-online-schema-change (Percona Toolkit)**
+
+```bash
+# For MySQL databases - performs changes without locking
+pt-online-schema-change \
+  --alter "MODIFY email VARCHAR(255)" \
+  --execute \
+  D=your_database,t=users
+```
+
+---
+
+### ⚙️ Configuration
+
+```php
+'ChangeColumnTypeOnLargeTable' => [
+    'enabled'  => true,
+    'severity' => 'error', // High severity - can cause significant downtime
+    'check_large_tables_only' => true, // false = check all tables
+],
+```
+
+Global settings (shared with other rules):
+```php
+'large_table_names' => ['users', 'orders', 'invoices'],
+```
+
+To check ALL tables (not just large ones):
+```php
+'ChangeColumnTypeOnLargeTable' => [
+    'check_large_tables_only' => false,  // Check all tables
+],
+```
+
+---
+
+### 🧾 Example Output
+
+```bash
+[error] ChangeColumnTypeOnLargeTable
+→ Changing column type of 'email' to string(255) on table 'users' requires ALTER TABLE, which locks the entire table and can cause downtime on large datasets.
+
+[Suggestion #1] ChangeColumnTypeOnLargeTable:
+  Changing column types on large tables can take minutes or hours. Consider these approaches:
+  
+  Option 1 - Zero-downtime approach (Recommended):
+    1. Add new column with desired type:
+       Schema::table('users', function (Blueprint $table) {
+           $table->string('email_new')->nullable();
+       });
+    
+    2. Backfill data in batches:
+       DB::table('users')
+           ->whereNull('email_new')
+           ->chunkById(1000, function ($records) {
+               foreach ($records as $record) {
+                   DB::table('users')
+                       ->where('id', $record->id)
+                       ->update(['email_new' => $record->email]);
+               }
+           });
+    
+    3. Update application code to use new column
+    
+    4. Drop old column (after verification):
+       Schema::table('users', function (Blueprint $table) {
+           $table->dropColumn('email'); // safe drop
+       });
+  
+  Option 2 - Maintenance window approach:
+    • Schedule during low-traffic period
+    • Put application in maintenance mode
+    • Run migration with timeout buffer
+    • Monitor query execution time
+  
+  Option 3 - Use raw SQL with pt-online-schema-change:
+    • Use Percona Toolkit for MySQL
+    • Performs changes without locking table
+    • Example: pt-online-schema-change --alter="MODIFY email ..." D=users
+  
+  To bypass this warning (if table is small or during maintenance):
+    Add '// safe change' or '// maintenance window' comment to the line.
+  
+  📖 Learn more: https://muhammad-sufyan5.github.io/sufyan-laravel-migration-lint-package/docs/rules#-changecolumntypeonlargetable
+```
+
+---
+
+### 🧠 Recommendation
+
+- **Default:** Avoid direct type changes on production tables with > 100k rows
+- **Best practice:** Use zero-downtime multi-step approach (add → backfill → switch → drop)
+- **Batch processing:** Always use `chunkById()` for data migration to avoid memory issues
+- **Testing:** Test the full migration process on a staging database with production-sized data
+- **Monitoring:** Monitor query execution time and table lock duration
+- **Maintenance window:** If using Option 2, communicate downtime window to users
+- **Tools:** Consider pt-online-schema-change for MySQL or pg_repack for PostgreSQL
+- **Safe bypass:** Use `// safe change` or `// maintenance window` comments only after:
+  - Verifying table is small (< 100k rows)
+  - Scheduling during maintenance window
+  - Testing on staging with real data volume
+  - Having rollback plan and database backups
+
+**Detected Column Type Methods:**
+- String: `string`, `char`, `varchar`, `text`, `mediumText`, `longText`
+- Numeric: `integer`, `tinyInteger`, `smallInteger`, `mediumInteger`, `bigInteger`, `unsignedInteger`, `float`, `double`, `decimal`, `unsignedDecimal`
+- Date/Time: `date`, `datetime`, `datetimeTz`, `time`, `timeTz`, `timestamp`, `timestampTz`, `year`
+- Other: `boolean`, `enum`, `json`, `jsonb`, `binary`, `uuid`, `ipAddress`, `macAddress`
 
 ---
 ````

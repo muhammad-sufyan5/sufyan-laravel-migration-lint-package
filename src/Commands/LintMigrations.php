@@ -5,6 +5,7 @@ namespace Sufyan\MigrationLinter\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Sufyan\MigrationLinter\Support\Reporter;
+use Sufyan\MigrationLinter\Support\HtmlReporter;
 use Sufyan\MigrationLinter\Support\RuleEngine;
 use Sufyan\MigrationLinter\Support\MigrationParser;
 
@@ -20,7 +21,9 @@ class LintMigrations extends Command
                             {--json : Output results in JSON format}
                             {--baseline= : Path to baseline file for ignoring known issues}
                             {--rules : Display available rules and exit}
-                            {--summary : Display summary footer in output}';
+                            {--summary : Display summary footer in output}
+                            {--no-suggestions : Hide migration suggestions from output}
+                            {--html=? : Generate HTML report (default: storage/app/migration-lint-report.html)}';
 
     /**
      * The console command description.
@@ -87,13 +90,29 @@ class LintMigrations extends Command
             return self::SUCCESS;
         }
 
+        // Generate HTML report if requested
+        if ($this->option('html') !== false) {
+            $htmlPath = $this->option('html') ?: 'storage/app/migration-lint-report.html';
+            $htmlReporter = new HtmlReporter();
+            $htmlReporter->generate($issues, $htmlPath);
+            $this->info("📄 HTML report generated: {$htmlPath}");
+            
+            // If only HTML output requested, skip console output
+            if (!$this->option('json') && !$this->output->isVerbose()) {
+                $threshold = config('migration-linter.severity_threshold', 'warning');
+                $reporter = new Reporter($this->output);
+                return $reporter->exitCode($issues, $threshold);
+            }
+        }
+
         // Render final report
         $reporter = new Reporter($this->output);
         $reporter->render(
             $issues,
             (bool) $this->option('json'),
             false, // compact
-            (bool) $this->option('summary') // show summary footer
+            (bool) $this->option('summary'), // show summary footer
+            !(bool) $this->option('no-suggestions') // show suggestions (default true)
         );
         $threshold = config('migration-linter.severity_threshold', 'warning');
         return $reporter->exitCode($issues, $threshold);

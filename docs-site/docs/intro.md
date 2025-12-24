@@ -51,15 +51,16 @@ Traditional Laravel migrations execute directly on production data — even smal
 
 ## 📸 Example Reports
 
-<img src="img/migrate-lint-report.png" alt="Laravel Migration Linter report" width="900" />
+<!-- <img src="img/migrate-lint-reportv2.1.0.png" alt="Laravel Migration Linter report" width="900" /> -->
+<img src="img/html-reportv2.1.0.png" alt="Laravel Migration Linter HTML Report" width="900" />
 
-<sub>Screenshot from v1.0.0 — showing lint warnings with flag `check_all_tables => false` in console output</sub>
+<sub>Screenshot from v2.1.0 — Interactive HTML report with charts, filtering, and search functionality</sub>
 
 ---
 
-<img src="img/migrate-lint-report-all-tables-true.png" alt="Laravel Migration Linter report" width="900" />
+<img src="img/migrate-lint-summaryv2.1.0.png" alt="Laravel Migration Linter report" width="900" />
 
-<sub>Screenshot from v1.1.1 — showing lint warnings with flag `check_all_tables => true` in console output</sub>
+<sub>Screenshot from v2.1.0 — showing lint warnings with flag `check_all_tables => true` in console output</sub>
 
 ---
 
