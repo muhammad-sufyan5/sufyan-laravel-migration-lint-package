@@ -10,7 +10,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/sufyandev/laravel-migration-linter.svg?style=flat-square)](https://packagist.org/packages/sufyandev/laravel-migration-linter)
 [![Laravel Version](https://img.shields.io/badge/Laravel-10%2B-orange?style=flat-square)](#)
 [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square)](#)
-[![Version](https://img.shields.io/badge/version-v2.1.0-green?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-v2.1.1-green?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
 A lightweight Laravel package that **analyzes your database migrations** and warns you about risky schema changes — before they reach production.  

@@ -1,6 +1,6 @@
----
+﻿---
 id: changelog
-title: 🗓️ Changelog
+title: ðŸ—“ï¸ Changelog
 sidebar_position: 8
 ---
 
@@ -9,26 +9,43 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## 🚀 [v2.1.1] — 2026-03-03
+
+### 🐛 Fixed
+- **migrate:lint no longer tries to write HTML report by default**
+  - Fixed --html option parsing so plain php artisan migrate:lint does not attempt report generation.
+  - Prevents invalid ? path writes on Windows environments (Git Bash / Laragon / XAMPP users).
+
+- **Safer HTML path resolution when --html is provided**
+  - --html now generates to default path storage/app/migration-lint-report.html when no custom path is supplied.
+  - Custom --html=your/path/report.html behavior remains unchanged.
+
+### 🧪 Developer
+- Added regression tests to prevent future --html option handling breakage.
+- Removed hardcoded package `version` from composer.json so Packagist versioning is fully tag-driven.
+
+---
+
 ## 🚀 [v2.1.0] — 2025-12-24
 
-### 🆕 Added
-- **New Rule: `RenamingColumnWithoutIndex`** — Detects column rename operations that can cause table locks and downtime
+### ðŸ†• Added
+- **New Rule: `RenamingColumnWithoutIndex`** â€” Detects column rename operations that can cause table locks and downtime
   - Warns when using `$table->renameColumn()` on large tables
   - Provides 3-phase zero-downtime migration strategy
   - Configurable to check large tables only or all tables
   - Supports safe comment bypass: `// safe rename`
 
-- **New Rule: `ChangeColumnTypeOnLargeTable`** — Detects column type changes that can cause table locks
+- **New Rule: `ChangeColumnTypeOnLargeTable`** â€” Detects column type changes that can cause table locks
   - Detects 25+ column type methods with `->change()` modifier (string, integer, decimal, text, datetime, boolean, enum, etc.)
   - Default severity: error (high impact operation)
   - Provides 3 migration strategies: zero-downtime, maintenance window, pt-online-schema-change
   - Supports safe comment bypass: `// safe change`, `// maintenance window`
 
-- **New Flag: `--no-suggestions`** — Hide migration suggestions for cleaner output
+- **New Flag: `--no-suggestions`** â€” Hide migration suggestions for cleaner output
   - Useful when you only want to see the warnings table
   - Can be combined with `--summary` for minimal output
 
-- **New Flag: `--html=`** — Generate interactive HTML reports
+- **New Flag: `--html=`** â€” Generate interactive HTML reports
   - Beautiful, responsive HTML reports with charts and visualizations
   - Searchable and filterable issue table
   - Grouped suggestions organized by rule type
@@ -36,25 +53,25 @@ This project follows [Semantic Versioning](https://semver.org/).
   - Perfect for sharing with team members and CI/CD artifacts
   - Example: `php artisan migrate:lint --html=storage/report.html`
 
-### ⚙️ Improved
-- **Enhanced MigrationParser** — Now properly skips commented-out lines
+### âš™ï¸ Improved
+- **Enhanced MigrationParser** â€” Now properly skips commented-out lines
   - Lines starting with `//` or `/*` are ignored during parsing
   - Prevents false positives from commented code
   - Tracks previous line context for safe comment detection
   
-- **Better Safe Comment Detection** — Comments on line above operations are now recognized
+- **Better Safe Comment Detection** â€” Comments on line above operations are now recognized
   - `// safe rename` on line before operation works correctly
   - `/* safe rename */` before operation works correctly
   - Inline comments continue to work: `$table->renameColumn(...); // safe rename`
 
-- **Improved Suggestion Output Formatting** — Cleaner, more organized display
+- **Improved Suggestion Output Formatting** â€” Cleaner, more organized display
   - Suggestions now grouped by rule type instead of repeated for each occurrence
   - Added visual hierarchy with section headers and separators
   - Shows occurrence count per rule (e.g., "3 occurrences")
   - Better indentation and color coding for readability
   - Professional CLI output with proper spacing
 
-### 🧰 Developer
+### ðŸ§° Developer
 - Added 13 comprehensive unit tests for `RenamingColumnWithoutIndex` rule
 - Added 16 comprehensive unit tests for `ChangeColumnTypeOnLargeTable` rule
 - Added 12 comprehensive unit tests for `HtmlReporter` class
@@ -65,9 +82,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## 🚀 [1.0.0] — 2025-10-15
+## ðŸš€ [1.0.0] â€” 2025-10-15
 
-### 🆕 Added
+### ðŸ†• Added
 - **Core Artisan command:**
   ```bash
   php artisan migrate:lint
@@ -81,18 +98,18 @@ Base rules:
 - Compact report output for smaller terminals.
 ---
 
-## 🧩 [1.1.0] — 2025-10-21
+## ðŸ§© [1.1.0] â€” 2025-10-21
 
-### 🆕 Added
-- **`DropColumnWithoutBackup`** rule — warns when columns are dropped without confirmation or backup.  
-- **`AddUniqueConstraintOnNonEmptyColumn`** rule — warns when adding unique constraints that might fail on existing data.  
-- **`FloatColumnForMoney`** rule — warns when using `float()` for monetary fields; recommends `decimal(10,2)` instead.
+### ðŸ†• Added
+- **`DropColumnWithoutBackup`** rule â€” warns when columns are dropped without confirmation or backup.  
+- **`AddUniqueConstraintOnNonEmptyColumn`** rule â€” warns when adding unique constraints that might fail on existing data.  
+- **`FloatColumnForMoney`** rule â€” warns when using `float()` for monetary fields; recommends `decimal(10,2)` instead.
 
-### ⚙️ Improved
+### âš™ï¸ Improved
 - Enhanced output formatting for compact mode (`--compact`) on smaller terminals.  
 - Configuration system now supports **custom rules** from any namespace (e.g., `App\MigrationRules`).  
 
-### 🧰 Developer
+### ðŸ§° Developer
 - Added rule discovery improvements in `RuleEngine`.  
 - Documentation updates (`rules.md`, `writing-custom-rules.md`, and `configuration.md`).
 
@@ -106,9 +123,9 @@ Initial public release with baseline rule set:
 
 ---
 
-## [v1.2.0] — 2025-10-30
+## [v1.2.0] â€” 2025-10-30
 
-### ✨ Added
+### âœ¨ Added
 - **AddNonNullableColumnWithoutDefault**
   - Detects `.change()` on existing columns.
   - Skips `Schema::create()` (safe for new tables).
@@ -128,12 +145,12 @@ Initial public release with baseline rule set:
   - Smarter pattern matching (price, amount, total, tax, etc.).
   - Configurable toggles: `check_double` and `check_real`.
 
-### 🧰 Improved
+### ðŸ§° Improved
 - Unified severity handling via config.
 - More informative lint messages for each rule.
 - Enhanced documentation and configuration examples.
 
-### 🐛 Fixed
+### ðŸ› Fixed
 - Config overrides now correctly respect `enabled = false`.
 - RuleEngine dynamically skips disabled rules during lint runs.
 
@@ -142,46 +159,46 @@ Initial public release with baseline rule set:
 
 ---
 
-## �️ [2.0.0] — 2025-11-20
+## ï¿½ï¸ [2.0.0] â€” 2025-11-20
 
-### ✨ Added (SOLID Principles Refactoring)
-- **8 Core Interfaces** — Dependency injection contracts
+### âœ¨ Added (SOLID Principles Refactoring)
+- **8 Core Interfaces** â€” Dependency injection contracts
   - `ConfigInterface`, `FormatterInterface`, `ParserInterface`, `RuleInterface`, `RuleEngineInterface`
   - `SeverityResolverInterface`, `ReporterInterface`, `BaselineInterface`
-- **3 Service Classes** — Reusable business logic
-  - `LaravelConfigProvider` — Bridges Laravel config to contracts
-  - `SeverityResolver` — Priority-based severity determination
-  - `LintService` — Orchestrates entire linting workflow
-- **5 Formatter Classes** — Modular output system
-  - `TableFormatter` — Console table format (with Symfony Table component)
-  - `JsonFormatter` — JSON output for CI/CD
-  - `CompactFormatter` — Single-line compact format
-  - `SummaryFormatter` — Table + statistics
-  - `BaseFormatter` — Shared utilities for all formatters
+- **3 Service Classes** â€” Reusable business logic
+  - `LaravelConfigProvider` â€” Bridges Laravel config to contracts
+  - `SeverityResolver` â€” Priority-based severity determination
+  - `LintService` â€” Orchestrates entire linting workflow
+- **5 Formatter Classes** â€” Modular output system
+  - `TableFormatter` â€” Console table format (with Symfony Table component)
+  - `JsonFormatter` â€” JSON output for CI/CD
+  - `CompactFormatter` â€” Single-line compact format
+  - `SummaryFormatter` â€” Table + statistics
+  - `BaseFormatter` â€” Shared utilities for all formatters
 
-### 🔧 Improved
+### ðŸ”§ Improved
 - **SOLID Principles** throughout:
-  - Single Responsibility — Each formatter, service, rule has one job
-  - Open/Closed — Add new formatters/services without modifying existing code
-  - Liskov Substitution — All formatters interchangeable via interface
-  - Interface Segregation — Small, focused contracts
-  - Dependency Inversion — Depend on interfaces, not implementations
-- **Table Formatting** — Fixed color code alignment
+  - Single Responsibility â€” Each formatter, service, rule has one job
+  - Open/Closed â€” Add new formatters/services without modifying existing code
+  - Liskov Substitution â€” All formatters interchangeable via interface
+  - Interface Segregation â€” Small, focused contracts
+  - Dependency Inversion â€” Depend on interfaces, not implementations
+- **Table Formatting** â€” Fixed color code alignment
   - Switched to Symfony's native `Table` component
   - Perfect column alignment regardless of content
   - Proper text wrapping and spacing
-- **Dependency Injection** — Service provider auto-wiring
+- **Dependency Injection** â€” Service provider auto-wiring
   - Laravel container bindings for all services
   - Automatic resolver injection into rules
   - Testable with mocked interfaces
 
-### ✅ Quality
+### âœ… Quality
 - **144 tests passing** (259 assertions)
 - **100% backward compatible** (zero breaking changes)
 - **~95% code coverage** (excellent test quality)
 
-### 🔄 Migration
-All commands work identically — no breaking changes:
+### ðŸ”„ Migration
+All commands work identically â€” no breaking changes:
 ```bash
 php artisan migrate:lint              # Still works
 php artisan migrate:lint --json       # Still works
@@ -192,53 +209,55 @@ php artisan migrate:lint --rules      # Still works
 
 ---
 
-## �🎯 [1.4.0] — 2025-11-15
+## ï¿½ðŸŽ¯ [1.4.0] â€” 2025-11-15
 
-### ✨ Added (Phase 3: UX Improvements + New Rule)
-- **Actionable Suggestions** — Every issue now includes `suggestion` field with fix recommendations
+### âœ¨ Added (Phase 3: UX Improvements + New Rule)
+- **Actionable Suggestions** â€” Every issue now includes `suggestion` field with fix recommendations
   - Suggestions appear in CLI output after the lint table with `[Suggestion #N]` headers
   - Suggestions included in JSON output as `suggestion` field for tool integration
   - Each suggestion provides clear, actionable next steps
-- **Documentation Links** — Issues now include optional `docsUrl` field
-  - Links appear in CLI with 📖 icon and full URL
+- **Documentation Links** â€” Issues now include optional `docsUrl` field
+  - Links appear in CLI with ðŸ“– icon and full URL
   - JSON output includes `docs_url` field for programmatic access
   - All built-in rules updated with relevant documentation links
-- **New Rule: SoftDeletesOnProduction** — Warns about soft deletes on large tables
+- **New Rule: SoftDeletesOnProduction** â€” Warns about soft deletes on large tables
   - Detects `softDeletes()` on tables in `large_table_names` config
   - Provides 3 alternatives: archive, hard delete, or add index on deleted_at
   - Includes suggestions and documentation links
-- **Enhanced AbstractRule.warn()** — Signature extended to accept `$suggestion` and `$docsUrl` parameters
+- **Enhanced AbstractRule.warn()** â€” Signature extended to accept `$suggestion` and `$docsUrl` parameters
   - Fully backward compatible (optional parameters)
   - Enables custom rule authors to provide rich feedback
 
-### 🧰 Improved
+### ðŸ§° Improved
 - **Reporter System**: Enhanced `renderTable()` and `renderJson()` to display/include suggestions
 - **Built-in Rules Updated**: AddNonNullableColumnWithoutDefault and MissingIndexOnForeignKey now include actionable suggestions
 - **Documentation**: Updated usage.md, rules.md, writing-custom-rules.md, ci-cd.md with new features and rules
 - **Developer Experience**: Custom rule authors can now provide suggestions via `warn()` method
 
-### 📊 Example Output
+### ðŸ“Š Example Output
 ```bash
 [warning] SoftDeletesOnProduction  
-→ Using soft deletes on the 'users' table may impact query performance over time.
+â†’ Using soft deletes on the 'users' table may impact query performance over time.
 
 [Suggestion #1] SoftDeletesOnProduction:
   Option 1: Archive old data to a separate table
   Option 2: Use hard deletes if retention isn't required
   Option 3: Add an index on 'deleted_at' to improve query performance
-  📖 Learn more: https://docs.example.com/rules#-softdeletesonproduction
+  ðŸ“– Learn more: https://docs.example.com/rules#-softdeletesonproduction
 ```
 
-### ✨ Overview
+### âœ¨ Overview
 - Changes fully backward compatible with v1.3.x
 - Total rule count: 6 rules (5 original + 1 new)
 
 ---
 
-🧠 Tip: You can always check your installed version via Composer:
+ðŸ§  Tip: You can always check your installed version via Composer:
 ```bash
 composer show sufyandev/laravel-migration-linter
 ```
 Or compare changes on GitHub:  
-👉 <a href="https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package" target="_blank">muhammad-sufyan5/sufyan-laravel-migration-lint-package</a>
+ðŸ‘‰ <a href="https://github.com/muhammad-sufyan5/sufyan-laravel-migration-lint-package" target="_blank">muhammad-sufyan5/sufyan-laravel-migration-lint-package</a>
+
+
 
