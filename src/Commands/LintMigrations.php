@@ -27,7 +27,7 @@ class LintMigrations extends Command
                             {--rules : Display available rules and exit}
                             {--summary : Display summary footer in output}
                             {--no-suggestions : Hide migration suggestions from output}
-                            {--html=? : Generate HTML report (default: storage/app/migration-lint-report.html)}';
+                            {--html= : Generate HTML report (optional custom path, defaults to storage/app/migration-lint-report.html)}';
 
     /**
      * The console command description.
@@ -112,8 +112,8 @@ class LintMigrations extends Command
         }
 
         // Generate HTML report if requested
-        if ($this->option('html') !== false) {
-            $htmlPath = $this->option('html') ?: 'storage/app/migration-lint-report.html';
+        if ($this->input->hasParameterOption('--html')) {
+            $htmlPath = $this->resolveHtmlOutputPath();
             $htmlReporter = new HtmlReporter();
             $htmlReporter->generate($issues, $htmlPath);
             $this->info("📄 HTML report generated: {$htmlPath}");
@@ -150,6 +150,19 @@ class LintMigrations extends Command
 
         // Default: TableFormatter
         return new TableFormatter();
+    }
+
+    /**
+     * Resolve HTML output path from command option.
+     */
+    protected function resolveHtmlOutputPath(): string
+    {
+        $htmlOption = $this->option('html');
+        if (is_string($htmlOption) && trim($htmlOption) !== '') {
+            return $htmlOption;
+        }
+
+        return storage_path('app/migration-lint-report.html');
     }
 
     /**
