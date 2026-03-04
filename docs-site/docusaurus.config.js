@@ -21,7 +21,11 @@ const config = {
 
   // Link handling
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
 
   // Localization
   i18n: {
@@ -53,9 +57,6 @@ const config = {
 
   // Theme configuration
   themeConfig: {
-    onBrokenLinks: "warn", // instead of 'throw'
-    onBrokenMarkdownLinks: "warn",
-
     // Metadata for SEO
     metadata: [
       {
