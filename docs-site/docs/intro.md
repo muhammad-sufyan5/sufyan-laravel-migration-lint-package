@@ -54,9 +54,9 @@ Traditional Laravel migrations execute directly on production data — even smal
 ## 📸 Example Reports
 
 <!-- <img src="img/migrate-lint-reportv2.1.0.png" alt="Laravel Migration Linter report" width="900" /> -->
-<img src="img/html-reportv2.1.0.png" alt="Laravel Migration Linter HTML Report" width="900" />
+<img src="img/html-reportv2.1.2.png" alt="Laravel Migration Linter HTML Report" width="900" />
 
-<sub>Screenshot from v2.1.0 — Interactive HTML report with charts, filtering, and search functionality</sub>
+<sub>Screenshot from v2.1.2 — Interactive HTML report with charts, filtering, and search functionality</sub>
 
 ---
 
