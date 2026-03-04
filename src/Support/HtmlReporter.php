@@ -69,6 +69,7 @@ class HtmlReporter
                 </div>
             </header>
 
+            {$this->renderToolbar()}
             {$this->renderSummary($stats)}
             {$this->renderChart($stats)}
             {$this->renderIssuesTable($issues, $stats)}
@@ -124,11 +125,37 @@ HTML;
         return $grouped;
     }
 
-    protected function renderSummary(array $stats): string
+    protected function renderToolbar(): string
     {
         return <<<HTML
+            <section class="card report-toolbar">
+                <div class="toolbar-left">
+                    <strong>Report Controls</strong>
+                    <span>Tailor this view for scanning, presentation, or printing.</span>
+                </div>
+                <div class="toolbar-actions">
+                    <button type="button" id="toggleDensity" class="toolbar-btn">Compact Density</button>
+                    <button type="button" id="toggleFocus" class="toolbar-btn">Focus Mode</button>
+                    <button type="button" id="printReport" class="toolbar-btn">Print / Save PDF</button>
+                </div>
+            </section>
+HTML;
+    }
+
+    protected function renderSummary(array $stats): string
+    {
+        $score = $this->calculateHealthScore($stats);
+        $scoreClass = $score >= 85 ? 'is-strong' : ($score >= 65 ? 'is-moderate' : 'is-poor');
+
+        return <<<HTML
             <section class="card summary-card">
-                <h2>Summary</h2>
+                <div class="summary-headline">
+                    <h2>Summary</h2>
+                    <div class="quality-score {$scoreClass}">
+                        <span class="score-label">Health Score</span>
+                        <strong>{$score}</strong>
+                    </div>
+                </div>
                 <div class="stats-grid">
                     <article class="stat-card">
                         <p class="stat-value">{$stats['total_issues']}</p>
@@ -151,6 +178,7 @@ HTML;
                         <p class="stat-label">Info</p>
                     </article>
                 </div>
+                <p class="summary-note">Use this report to prioritize blocking risks first, then remove warning patterns before rollout.</p>
             </section>
 HTML;
     }
@@ -180,6 +208,11 @@ HTML;
                     <div class="bar-item info" style="width: {$infoPercent}%">
                         <span class="bar-label">Info {$stats['info']}</span>
                     </div>
+                </div>
+                <div class="chart-legend">
+                    <span class="legend-item error-dot">Errors {$errorPercent}%</span>
+                    <span class="legend-item warning-dot">Warnings {$warningPercent}%</span>
+                    <span class="legend-item info-dot">Info {$infoPercent}%</span>
                 </div>
             </section>
 HTML;
@@ -374,6 +407,18 @@ HTML;
         return 'All clear';
     }
 
+    protected function calculateHealthScore(array $stats): int
+    {
+        if ($stats['total_issues'] === 0) {
+            return 100;
+        }
+
+        $weightedRisk = ($stats['errors'] * 10) + ($stats['warnings'] * 4) + ($stats['info'] * 1.5);
+        $penalty = min(100, (int) round(($weightedRisk / max(1, $stats['total_issues'])) * 4));
+
+        return max(0, 100 - $penalty);
+    }
+
     protected function escape(string $value): string
     {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -403,7 +448,7 @@ HTML;
 
 body {
     margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Aptos", "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
     color: var(--text);
     background:
         radial-gradient(circle at 10% 5%, rgba(10, 94, 176, 0.08), transparent 30%),
@@ -504,6 +549,89 @@ h2 {
     font-size: 20px;
 }
 
+.report-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.toolbar-left strong {
+    display: block;
+    font-size: 15px;
+}
+
+.toolbar-left span {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar-btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1f2c3d;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.toolbar-btn:hover {
+    border-color: var(--brand);
+    color: var(--brand-dark);
+}
+
+.summary-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.quality-score {
+    border-radius: 12px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.score-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.quality-score strong {
+    font-size: 22px;
+}
+
+.quality-score.is-strong {
+    border-color: rgba(31, 143, 84, 0.35);
+    background: rgba(31, 143, 84, 0.08);
+}
+
+.quality-score.is-moderate {
+    border-color: rgba(196, 130, 31, 0.35);
+    background: rgba(196, 130, 31, 0.08);
+}
+
+.quality-score.is-poor {
+    border-color: rgba(199, 53, 53, 0.35);
+    background: rgba(199, 53, 53, 0.08);
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -541,6 +669,16 @@ h2 {
     font-size: 13px;
 }
 
+.summary-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f7fbff;
+    border: 1px solid #dce9f8;
+    color: #2b3e57;
+    font-size: 13px;
+}
+
 .bar-chart {
     display: flex;
     min-height: 42px;
@@ -572,6 +710,40 @@ h2 {
 }
 
 .bar-item.info {
+    background: var(--info);
+}
+
+.chart-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #2b3e57;
+}
+
+.legend-item::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.legend-item.error-dot::before {
+    background: var(--danger);
+}
+
+.legend-item.warning-dot::before {
+    background: #efb450;
+}
+
+.legend-item.info-dot::before {
     background: var(--info);
 }
 
@@ -656,6 +828,12 @@ th {
 .issues-table tbody tr:hover,
 .breakdown-table tbody tr:hover {
     background: #f7fbff;
+}
+
+.issues-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 .issues-table tbody tr.hidden {
@@ -782,6 +960,46 @@ code {
     color: var(--brand);
 }
 
+.is-compact td,
+.is-compact th {
+    padding: 8px 9px;
+    font-size: 12px;
+}
+
+.is-compact .card {
+    padding: 14px;
+}
+
+.is-focus .report-toolbar,
+.is-focus .suggestions-section,
+.is-focus .breakdown-section {
+    display: none;
+}
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .page-shell {
+        padding: 0;
+    }
+
+    .card,
+    .header {
+        box-shadow: none;
+        border: 1px solid #d0d8e3;
+        break-inside: avoid;
+    }
+
+    .report-toolbar,
+    .search-input,
+    .filters,
+    .footer {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     .page-shell {
         padding: 12px;
@@ -796,6 +1014,12 @@ code {
     }
 
     .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .report-toolbar,
+    .summary-headline {
         flex-direction: column;
         align-items: flex-start;
     }
@@ -831,6 +1055,9 @@ CSS;
 const rows = Array.from(document.querySelectorAll('.issues-table tbody tr'));
 const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
 const searchInput = document.getElementById('searchInput');
+const densityButton = document.getElementById('toggleDensity');
+const focusButton = document.getElementById('toggleFocus');
+const printButton = document.getElementById('printReport');
 
 function applyFilters() {
     if (!rows.length) {
@@ -859,6 +1086,30 @@ filterButtons.forEach((button) => {
 
 if (searchInput) {
     searchInput.addEventListener('input', applyFilters);
+}
+
+if (densityButton) {
+    densityButton.addEventListener('click', () => {
+        document.body.classList.toggle('is-compact');
+        densityButton.textContent = document.body.classList.contains('is-compact')
+            ? 'Comfortable Density'
+            : 'Compact Density';
+    });
+}
+
+if (focusButton) {
+    focusButton.addEventListener('click', () => {
+        document.body.classList.toggle('is-focus');
+        focusButton.textContent = document.body.classList.contains('is-focus')
+            ? 'Show Full Report'
+            : 'Focus Mode';
+    });
+}
+
+if (printButton) {
+    printButton.addEventListener('click', () => {
+        window.print();
+    });
 }
 
 applyFilters();
